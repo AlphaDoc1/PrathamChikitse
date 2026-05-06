@@ -18,9 +18,22 @@ class HospitalRepository @Inject constructor(
         }
     }
 
-    fun getHospitalsSortedByDistance(lat: Double, lng: Double): List<Hospital> {
+    fun clearCache() {
+        cachedHospitals = null
+    }
+
+    fun getHospitalsForLocation(lat: Double, lng: Double): List<Hospital> {
         val hospitals = getHospitals().getOrNull() ?: return emptyList()
-        return hospitals.sortedBy { it.distanceTo(lat, lng) }
+        val isBangalore = lat in 12.7..13.2 && lng in 77.4..77.8
+        val isKarnataka = lat in 11.5..18.5 && lng in 74.0..78.5
+        
+        return if (isBangalore) {
+            hospitals.filter { it.city.equals("Bangalore", true) }.sortedBy { it.distanceTo(lat, lng) }
+        } else if (isKarnataka) {
+            hospitals.filter { !it.city.equals("Bangalore", true) }.sortedBy { it.distanceTo(lat, lng) }
+        } else {
+            hospitals.sortedBy { it.distanceTo(lat, lng) }
+        }
     }
 
     fun getEmergencyHospitals(): List<Hospital> {

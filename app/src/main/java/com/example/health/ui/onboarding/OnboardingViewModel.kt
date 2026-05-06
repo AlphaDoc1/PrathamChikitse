@@ -56,4 +56,8 @@ class OnboardingViewModel @Inject constructor(
     fun saveEmergencyContacts(contacts: String) {
         viewModelScope.launch { userPrefsRepo.setEmergencyContacts(contacts) }
     }
+
+    fun saveLocation(lat: Double, lng: Double) {
+        viewModelScope.launch { userPrefsRepo.setLastLocation(lat.toFloat(), lng.toFloat()) }
+    }
 }

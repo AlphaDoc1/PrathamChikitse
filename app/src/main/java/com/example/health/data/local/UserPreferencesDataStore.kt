@@ -38,6 +38,8 @@ class UserPreferencesDataStore @Inject constructor(
         val RECENTS = stringPreferencesKey("recents")
         val SEARCH_HISTORY = stringPreferencesKey("search_history")
         val VIEW_COUNTS = stringPreferencesKey("view_counts")
+        val LAST_LAT = floatPreferencesKey("last_lat")
+        val LAST_LNG = floatPreferencesKey("last_lng")
     }
 
     private fun <T> safeFlow(flow: Flow<T>, default: T): Flow<T> =
@@ -108,6 +110,13 @@ class UserPreferencesDataStore @Inject constructor(
                 if (parts.size == 2) parts[0] to (parts[1].toIntOrNull() ?: 0) else null
             }.toMap()
         }, emptyMap()
+    )
+
+    val lastLat: Flow<Float> = safeFlow(
+        context.dataStore.data.map { it[Keys.LAST_LAT] ?: 0f }, 0f
+    )
+    val lastLng: Flow<Float> = safeFlow(
+        context.dataStore.data.map { it[Keys.LAST_LNG] ?: 0f }, 0f
     )
 
     suspend fun setOnboardingCompleted(completed: Boolean) {
@@ -181,6 +190,13 @@ class UserPreferencesDataStore @Inject constructor(
             }.toMap().toMutableMap()
             counts[id] = (counts[id] ?: 0) + 1
             prefs[Keys.VIEW_COUNTS] = counts.entries.joinToString(",") { "${it.key}:${it.value}" }
+        }
+    }
+
+    suspend fun setLastLocation(lat: Float, lng: Float) {
+        context.dataStore.edit {
+            it[Keys.LAST_LAT] = lat
+            it[Keys.LAST_LNG] = lng
         }
     }
 }

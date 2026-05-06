@@ -32,6 +32,39 @@ fun HospitalScreen(onBack: () -> Unit, viewModel: HospitalViewModel = hiltViewMo
     val error by viewModel.error.collectAsStateWithLifecycle()
     val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
     val context = LocalContext.current
+    var permissionRequested by remember { mutableStateOf(false) }
+
+    val launcher = androidx.activity.compose.rememberLauncherForActivityResult(
+        androidx.activity.result.contract.ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        val granted = permissions[android.Manifest.permission.ACCESS_FINE_LOCATION] == true || 
+                      permissions[android.Manifest.permission.ACCESS_COARSE_LOCATION] == true
+        if (granted) {
+            try {
+                val client = com.google.android.gms.location.LocationServices.getFusedLocationProviderClient(context)
+                client.lastLocation.addOnSuccessListener { location ->
+                    if (location != null) viewModel.updateLocation(location.latitude, location.longitude)
+                    else viewModel.updateLocation(null, null)
+                }.addOnFailureListener {
+                    viewModel.updateLocation(null, null)
+                }
+            } catch (e: SecurityException) {
+                viewModel.updateLocation(null, null)
+            }
+        } else {
+            viewModel.updateLocation(null, null)
+        }
+    }
+
+    LaunchedEffect(Unit) {
+        if (!permissionRequested) {
+            permissionRequested = true
+            launcher.launch(arrayOf(
+                android.Manifest.permission.ACCESS_FINE_LOCATION,
+                android.Manifest.permission.ACCESS_COARSE_LOCATION
+            ))
+        }
+    }
 
     Scaffold(
         topBar = {

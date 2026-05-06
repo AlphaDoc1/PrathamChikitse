@@ -19,7 +19,13 @@ class JsonDataSource @Inject constructor(
 
     private inline fun <reified T> loadJson(fileName: String): Result<T> {
         return try {
-            val json = context.assets.open(fileName).bufferedReader().use { it.readText() }
+            val isKn = context.resources.configuration.locales[0].language == "kn"
+            val targetFileName = if (isKn) fileName.replace(".json", "_kn.json") else fileName
+            val json = try {
+                context.assets.open(targetFileName).bufferedReader().use { it.readText() }
+            } catch (e: Exception) {
+                context.assets.open(fileName).bufferedReader().use { it.readText() }
+            }
             val data = gson.fromJson(json, T::class.java)
             if (data != null) Result.success(data)
             else Result.failure(IllegalStateException("Failed to parse $fileName"))

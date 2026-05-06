@@ -74,6 +74,9 @@ dependencies {
     // Gson
     implementation(libs.gson)
 
+    // Location
+    implementation(libs.play.services.location)
+
     // Testing
     testImplementation(libs.junit)
     androidTestImplementation(platform(libs.androidx.compose.bom))

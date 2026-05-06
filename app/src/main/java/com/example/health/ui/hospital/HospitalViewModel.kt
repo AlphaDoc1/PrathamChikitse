@@ -48,18 +48,24 @@ class HospitalViewModel @Inject constructor(
         )
     }
 
-    fun updateLocation(lat: Double, lng: Double) {
-        _userLat.value = lat
-        _userLng.value = lng
-        _hasLocation.value = true
-        _hospitals.value = hospitalRepo.getHospitalsSortedByDistance(lat, lng)
+    fun updateLocation(lat: Double?, lng: Double?) {
+        if (lat != null && lng != null) {
+            _userLat.value = lat
+            _userLng.value = lng
+            _hasLocation.value = true
+            _hospitals.value = hospitalRepo.getHospitalsForLocation(lat, lng)
+        } else {
+            // Default fallback to Bangalore
+            _hasLocation.value = false
+            _hospitals.value = hospitalRepo.getHospitalsForLocation(12.9716, 77.5946)
+        }
     }
 
     fun search(query: String) {
         _searchQuery.value = query
         _hospitals.value = if (query.isBlank()) {
-            if (_hasLocation.value) hospitalRepo.getHospitalsSortedByDistance(_userLat.value, _userLng.value)
-            else hospitalRepo.getHospitals().getOrDefault(emptyList())
+            if (_hasLocation.value) hospitalRepo.getHospitalsForLocation(_userLat.value, _userLng.value)
+            else hospitalRepo.getHospitalsForLocation(12.9716, 77.5946)
         } else {
             hospitalRepo.searchHospitals(query)
         }

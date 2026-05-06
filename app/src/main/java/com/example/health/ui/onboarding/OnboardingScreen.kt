@@ -109,7 +109,28 @@ fun LanguageScreen(selected: String, onSelect: (String) -> Unit, onNext: () -> U
 }
 
 @Composable
-fun PermissionsScreen(onNext: () -> Unit, onSkip: () -> Unit) {
+fun PermissionsScreen(onNext: () -> Unit, onSkip: () -> Unit, viewModel: OnboardingViewModel = androidx.hilt.navigation.compose.hiltViewModel()) {
+    val context = androidx.compose.ui.platform.LocalContext.current
+    val launcher = androidx.activity.compose.rememberLauncherForActivityResult(
+        androidx.activity.result.contract.ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        val granted = permissions[android.Manifest.permission.ACCESS_FINE_LOCATION] == true || 
+                      permissions[android.Manifest.permission.ACCESS_COARSE_LOCATION] == true
+        if (granted) {
+            try {
+                val client = com.google.android.gms.location.LocationServices.getFusedLocationProviderClient(context)
+                client.lastLocation.addOnSuccessListener { location ->
+                    if (location != null) viewModel.saveLocation(location.latitude, location.longitude)
+                    onNext()
+                }.addOnFailureListener { onNext() }
+            } catch (e: SecurityException) {
+                onNext()
+            }
+        } else {
+            onNext()
+        }
+    }
+
     Column(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).padding(24.dp)) {
         Spacer(Modifier.height(48.dp))
         Text("Permissions", style = MaterialTheme.typography.displaySmall, fontWeight = FontWeight.Bold)
@@ -120,7 +141,12 @@ fun PermissionsScreen(onNext: () -> Unit, onSkip: () -> Unit) {
         Spacer(Modifier.height(12.dp))
         PermCard(Icons.Filled.LocationOn, "Location", "Find nearby hospitals sorted by distance")
         Spacer(Modifier.weight(1f))
-        Button(onNext, Modifier.fillMaxWidth().height(56.dp), shape = RoundedCornerShape(16.dp)) { Text("Grant Permissions") }
+        Button({ 
+            launcher.launch(arrayOf(
+                android.Manifest.permission.ACCESS_FINE_LOCATION,
+                android.Manifest.permission.ACCESS_COARSE_LOCATION
+            ))
+        }, Modifier.fillMaxWidth().height(56.dp), shape = RoundedCornerShape(16.dp)) { Text("Grant Permissions") }
         Spacer(Modifier.height(8.dp))
         TextButton(onSkip, Modifier.fillMaxWidth()) { Text("Skip - I'll set up later") }
     }

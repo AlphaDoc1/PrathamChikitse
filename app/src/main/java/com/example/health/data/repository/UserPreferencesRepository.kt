@@ -20,6 +20,8 @@ class UserPreferencesRepository @Inject constructor(
     val vibrationCues: Flow<Boolean> = dataStore.vibrationCues
     val voiceFirstMode: Flow<Boolean> = dataStore.voiceFirstMode
     val emergencyContacts: Flow<String> = dataStore.emergencyContacts
+    val lastLat: Flow<Float> = dataStore.lastLat
+    val lastLng: Flow<Float> = dataStore.lastLng
 
     suspend fun setOnboardingCompleted(v: Boolean) = dataStore.setOnboardingCompleted(v)
     suspend fun setDisclaimerAccepted(v: Boolean) = dataStore.setDisclaimerAccepted(v)
@@ -32,4 +34,5 @@ class UserPreferencesRepository @Inject constructor(
     suspend fun setVibrationCues(v: Boolean) = dataStore.setVibrationCues(v)
     suspend fun setVoiceFirstMode(v: Boolean) = dataStore.setVoiceFirstMode(v)
     suspend fun setEmergencyContacts(v: String) = dataStore.setEmergencyContacts(v)
+    suspend fun setLastLocation(lat: Float, lng: Float) = dataStore.setLastLocation(lat, lng)
 }

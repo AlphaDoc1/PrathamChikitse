@@ -18,7 +18,8 @@ data class Hospital(
     val longitude: Double = 0.0,
     val emergencyAvailable: Boolean = false,
     val ambulanceAvailable: Boolean = false,
-    val open24x7: Boolean = false
+    val open24x7: Boolean = false,
+    val city: String = ""
 ) {
     fun distanceTo(lat: Double, lng: Double): Double {
         val earthRadius = 6371.0
