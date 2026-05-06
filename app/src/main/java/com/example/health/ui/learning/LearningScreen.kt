@@ -13,12 +13,14 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.health.R
 import com.example.health.data.model.MythFact
 import com.example.health.ui.components.ShimmerEffect
 import com.example.health.ui.theme.HealthThemeExtras
@@ -36,12 +38,12 @@ fun LearningScreen(
     val selectedTab by viewModel.selectedTab.collectAsStateWithLifecycle()
 
     Scaffold(
-        topBar = { TopAppBar(title = { Text("Learn First Aid") }, navigationIcon = { IconButton(onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back") } }) }
+        topBar = { TopAppBar(title = { Text(stringResource(R.string.learning_center)) }, navigationIcon = { IconButton(onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back") } }) }
     ) { padding ->
         Column(Modifier.fillMaxSize().padding(padding)) {
             TabRow(selectedTab) {
-                Tab(selectedTab == 0, { viewModel.selectTab(0) }, text = { Text("Guides") }, icon = { Icon(Icons.Filled.MenuBook, null) })
-                Tab(selectedTab == 1, { viewModel.selectTab(1) }, text = { Text("Myths vs Facts") }, icon = { Icon(Icons.Filled.Lightbulb, null) })
+                Tab(selectedTab == 0, { viewModel.selectTab(0) }, text = { Text(stringResource(R.string.modules)) }, icon = { Icon(Icons.Filled.MenuBook, null) })
+                Tab(selectedTab == 1, { viewModel.selectTab(1) }, text = { Text(stringResource(R.string.myths_facts)) }, icon = { Icon(Icons.Filled.Lightbulb, null) })
             }
 
             if (isLoading) { ShimmerEffect(); return@Scaffold }

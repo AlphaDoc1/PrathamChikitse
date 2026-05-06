@@ -12,11 +12,13 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.health.R
 import com.example.health.ui.components.*
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -42,8 +44,8 @@ fun HomeScreen(
         // Header
         item {
             Column(Modifier.padding(horizontal = 16.dp, vertical = 12.dp)) {
-                Text("Pratham Chikitse", style = MaterialTheme.typography.headlineLarge, fontWeight = FontWeight.Bold)
-                Text("Emergency First-Aid Guide", style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(stringResource(R.string.app_name), style = MaterialTheme.typography.headlineLarge, fontWeight = FontWeight.Bold)
+                Text(stringResource(R.string.home_subtitle), style = MaterialTheme.typography.bodyMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
 
@@ -53,7 +55,7 @@ fun HomeScreen(
                 value = searchQuery,
                 onValueChange = { viewModel.search(it) },
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-                placeholder = { Text("Search emergencies...") },
+                placeholder = { Text(stringResource(R.string.search_placeholder)) },
                 leadingIcon = { Icon(Icons.Filled.Search, "Search") },
                 trailingIcon = {
                     if (searchQuery.isNotEmpty()) IconButton({ viewModel.search("") }) { Icon(Icons.Filled.Clear, "Clear") }
@@ -72,11 +74,11 @@ fun HomeScreen(
 
         // Quick Actions
         item {
-            SectionHeader(title = "Quick Actions")
+            SectionHeader(title = stringResource(R.string.quick_actions))
             Row(Modifier.fillMaxWidth().padding(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                QuickActionCard(Icons.Filled.Phone, "Call 108", onSOSClick, Modifier.weight(1f))
-                QuickActionCard(Icons.Filled.SmartToy, "AI Assist", onAssistantClick, Modifier.weight(1f))
-                QuickActionCard(Icons.Filled.LocalHospital, "Hospitals", onHospitalsClick, Modifier.weight(1f))
+                QuickActionCard(Icons.Filled.Phone, stringResource(R.string.call_108), onSOSClick, Modifier.weight(1f))
+                QuickActionCard(Icons.Filled.SmartToy, stringResource(R.string.ai_assist), onAssistantClick, Modifier.weight(1f))
+                QuickActionCard(Icons.Filled.LocalHospital, stringResource(R.string.hospitals), onHospitalsClick, Modifier.weight(1f))
             }
             Spacer(Modifier.height(20.dp))
         }
@@ -84,7 +86,7 @@ fun HomeScreen(
         // Search results or normal content
         if (searchQuery.isNotEmpty()) {
             val filtered = viewModel.getFilteredCategories()
-            item { SectionHeader(title = "Search Results (${filtered.size})") }
+            item { SectionHeader(title = stringResource(R.string.search_results) + " (${filtered.size})") }
             items(filtered, key = { it.id }) { cat ->
                 EmergencyCard(
                     category = cat,
@@ -98,7 +100,7 @@ fun HomeScreen(
             // Recent
             if (uiState.recentCategories.isNotEmpty()) {
                 item {
-                    SectionHeader(title = "Recently Viewed")
+                    SectionHeader(title = stringResource(R.string.recently_viewed))
                     LazyRow(contentPadding = PaddingValues(horizontal = 16.dp), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                         items(uiState.recentCategories, key = { "recent_${it.id}" }) { cat ->
                             Card(
@@ -120,7 +122,7 @@ fun HomeScreen(
             }
 
             // Top / All Categories
-            item { SectionHeader(title = "All Emergencies", action = "View All", onAction = onViewAllCategories) }
+            item { SectionHeader(title = stringResource(R.string.all_emergencies), action = stringResource(R.string.view_all), onAction = onViewAllCategories) }
             items(uiState.categories, key = { it.id }) { cat ->
                 EmergencyCard(
                     category = cat,

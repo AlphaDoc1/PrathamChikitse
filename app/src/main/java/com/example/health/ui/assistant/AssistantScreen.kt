@@ -18,10 +18,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.health.R
 import com.example.health.ui.theme.HealthThemeExtras
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -46,7 +48,7 @@ fun AssistantScreen(
             TopAppBar(
                 title = {
                     Column {
-                        Text("AI Triage Assistant", style = MaterialTheme.typography.titleMedium)
+                        Text(stringResource(R.string.assistant_title), style = MaterialTheme.typography.titleMedium)
                         Text("Offline • Keyword Engine", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 },
@@ -167,7 +169,7 @@ fun AssistantScreen(
                         value = inputText,
                         onValueChange = { viewModel.updateInput(it) },
                         modifier = Modifier.weight(1f),
-                        placeholder = { Text("Describe the emergency...") },
+                        placeholder = { Text(stringResource(R.string.type_message)) },
                         singleLine = true,
                         shape = RoundedCornerShape(24.dp)
                     )

@@ -1,21 +1,41 @@
 package com.example.health
 
+import android.content.Context
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.health.data.repository.EmergencyRepository
+import com.example.health.data.repository.HospitalRepository
+import com.example.health.data.repository.LearningRepository
 import com.example.health.navigation.AppNavGraph
 import com.example.health.ui.onboarding.OnboardingViewModel
 import com.example.health.ui.settings.SettingsViewModel
 import com.example.health.ui.theme.HealthTheme
+import com.example.health.util.LocaleHelper
+import com.example.health.util.TTSManager
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    @Inject lateinit var emergencyRepo: EmergencyRepository
+    @Inject lateinit var hospitalRepo: HospitalRepository
+    @Inject lateinit var learningRepo: LearningRepository
+    @Inject lateinit var ttsManager: TTSManager
+
+    // Called before setContent — applies the saved locale so all stringResource() calls
+    // resolve in the correct language immediately on this activity instance.
+    override fun attachBaseContext(newBase: Context) {
+        val lang = LocaleHelper.getPersistedLanguage(newBase)
+        super.attachBaseContext(LocaleHelper.wrap(newBase, lang))
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -24,22 +44,32 @@ class MainActivity : ComponentActivity() {
             val themeMode by settingsVm.themeMode.collectAsStateWithLifecycle()
             val language by settingsVm.language.collectAsStateWithLifecycle()
             val isDarkTheme = when (themeMode) {
-                "dark" -> true
+                "dark"  -> true
                 "light" -> false
-                else -> isSystemInDarkTheme()
+                else    -> isSystemInDarkTheme()
             }
 
-            androidx.compose.runtime.LaunchedEffect(language) {
-                try {
-                    val locale = java.util.Locale(language)
-                    java.util.Locale.setDefault(locale)
-                    val resources = baseContext.resources
-                    val config = resources.configuration
-                    config.setLocale(locale)
-                    @Suppress("DEPRECATION")
-                    resources.updateConfiguration(config, resources.displayMetrics)
-                } catch (e: Exception) {
-                    e.printStackTrace()
+            // React to language changes emitted from DataStore.
+            // 1. Persist to SharedPreferences so attachBaseContext reads it next time.
+            // 2. Clear all JSON caches so the next load picks the translated file.
+            // 3. Re-init TTS with the new locale.
+            // 4. Recreate the activity ONCE — attachBaseContext will apply the locale.
+            LaunchedEffect(language) {
+                val persisted = LocaleHelper.getPersistedLanguage(applicationContext)
+                if (persisted != language) {
+                    // Persist first so attachBaseContext sees it on the next create.
+                    LocaleHelper.persistLanguage(applicationContext, language)
+
+                    // Clear caches so JSON is reloaded in the new language.
+                    emergencyRepo.clearCache()
+                    hospitalRepo.clearCache()
+                    learningRepo.clearCache()
+
+                    // Re-init TTS so it speaks in the correct locale.
+                    ttsManager.shutdown()
+
+                    // One clean recreate — no loop because persisted == language now.
+                    recreate()
                 }
             }
 

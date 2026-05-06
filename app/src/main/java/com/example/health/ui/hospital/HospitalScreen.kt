@@ -14,11 +14,13 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.health.R
 import com.example.health.data.model.Hospital
 import com.example.health.ui.components.ErrorState
 import com.example.health.ui.components.ShimmerEffect
@@ -69,7 +71,7 @@ fun HospitalScreen(onBack: () -> Unit, viewModel: HospitalViewModel = hiltViewMo
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Nearby Hospitals") },
+                title = { Text(stringResource(R.string.nearby_hospitals)) },
                 navigationIcon = { IconButton(onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back") } }
             )
         }
@@ -78,7 +80,7 @@ fun HospitalScreen(onBack: () -> Unit, viewModel: HospitalViewModel = hiltViewMo
             OutlinedTextField(
                 value = searchQuery, onValueChange = { viewModel.search(it) },
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-                placeholder = { Text("Search hospitals...") },
+                placeholder = { Text(stringResource(R.string.search_hospitals)) },
                 leadingIcon = { Icon(Icons.Filled.Search, null) },
                 trailingIcon = { if (searchQuery.isNotEmpty()) IconButton({ viewModel.search("") }) { Icon(Icons.Filled.Clear, null) } },
                 singleLine = true, shape = RoundedCornerShape(16.dp)
@@ -130,8 +132,8 @@ fun HospitalCard(hospital: Hospital, distance: String, onCall: () -> Unit, onMap
             }
             Spacer(Modifier.height(8.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                OutlinedButton(onCall, Modifier.weight(1f)) { Icon(Icons.Filled.Phone, null, Modifier.size(18.dp)); Spacer(Modifier.width(4.dp)); Text("Call") }
-                Button(onMap, Modifier.weight(1f)) { Icon(Icons.Filled.Map, null, Modifier.size(18.dp)); Spacer(Modifier.width(4.dp)); Text("Directions") }
+                OutlinedButton(onCall, Modifier.weight(1f)) { Icon(Icons.Filled.Phone, null, Modifier.size(18.dp)); Spacer(Modifier.width(4.dp)); Text(stringResource(R.string.call)) }
+                Button(onMap, Modifier.weight(1f)) { Icon(Icons.Filled.Map, null, Modifier.size(18.dp)); Spacer(Modifier.width(4.dp)); Text(stringResource(R.string.directions)) }
             }
         }
     }

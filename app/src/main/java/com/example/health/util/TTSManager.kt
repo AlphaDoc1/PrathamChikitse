@@ -23,7 +23,12 @@ class TTSManager @Inject constructor(
         }
         tts = TextToSpeech(context) { status ->
             if (status == TextToSpeech.SUCCESS) {
-                tts?.language = Locale("en", "IN")
+                // Try the currently active locale first; fall back to en-IN if unavailable.
+                val preferred = Locale.getDefault()
+                val result = tts?.setLanguage(preferred)
+                if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+                    tts?.language = Locale("en", "IN")
+                }
                 isInitialized = true
                 onReady?.invoke()
                 pendingText?.let { speak(it) }

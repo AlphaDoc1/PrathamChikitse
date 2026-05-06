@@ -22,6 +22,12 @@ class LearningRepository @Inject constructor(
         }
     }
 
+    fun clearCache() {
+        cachedModules = null
+        cachedMyths = null
+        cachedDisclaimer = null
+    }
+
     fun getModuleById(id: String): LearningModule? {
         return cachedModules?.find { it.id == id }
             ?: getModules().getOrNull()?.find { it.id == id }

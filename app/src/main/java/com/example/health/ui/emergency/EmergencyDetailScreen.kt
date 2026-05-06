@@ -13,11 +13,13 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.health.R
 import com.example.health.ui.components.SeverityChip
 import com.example.health.ui.theme.HealthThemeExtras
 
@@ -100,7 +102,7 @@ fun EmergencyDetailScreen(
                             Icon(Icons.Filled.Warning, null, tint = HealthThemeExtras.colors.emergency)
                             Spacer(Modifier.width(12.dp))
                             Column {
-                                Text("When to Call Emergency", style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold, color = HealthThemeExtras.colors.emergency)
+                                Text(stringResource(R.string.when_to_call), style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.Bold, color = HealthThemeExtras.colors.emergency)
                                 Spacer(Modifier.height(4.dp))
                                 Text(cat.whenToCallEmergency, style = MaterialTheme.typography.bodyMedium)
                             }
@@ -110,7 +112,7 @@ fun EmergencyDetailScreen(
                 }
 
                 // Immediate Steps header
-                Text("Immediate Steps", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+                Text(stringResource(R.string.immediate_steps), style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
                 Spacer(Modifier.height(8.dp))
             }
 
@@ -132,7 +134,7 @@ fun EmergencyDetailScreen(
             if (cat.doList.isNotEmpty()) {
                 item {
                     Spacer(Modifier.height(16.dp))
-                    Text("✅ Do's", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold, color = HealthThemeExtras.colors.safe)
+                    Text("✅ ${stringResource(R.string.do_list)}", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold, color = HealthThemeExtras.colors.safe)
                     Spacer(Modifier.height(8.dp))
                     Card(Modifier.fillMaxWidth(), shape = RoundedCornerShape(12.dp), colors = CardDefaults.cardColors(HealthThemeExtras.colors.safeContainer)) {
                         Column(Modifier.padding(16.dp)) {
@@ -152,7 +154,7 @@ fun EmergencyDetailScreen(
             if (cat.dontList.isNotEmpty()) {
                 item {
                     Spacer(Modifier.height(16.dp))
-                    Text("❌ Don'ts", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold, color = HealthThemeExtras.colors.emergency)
+                    Text("❌ ${stringResource(R.string.dont_list)}", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold, color = HealthThemeExtras.colors.emergency)
                     Spacer(Modifier.height(8.dp))
                     Card(Modifier.fillMaxWidth(), shape = RoundedCornerShape(12.dp), colors = CardDefaults.cardColors(HealthThemeExtras.colors.emergencyContainer)) {
                         Column(Modifier.padding(16.dp)) {
@@ -172,7 +174,7 @@ fun EmergencyDetailScreen(
             if (cat.preventionTips.isNotEmpty()) {
                 item {
                     Spacer(Modifier.height(16.dp))
-                    Text("🛡️ Prevention Tips", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+                    Text("🛡️ ${stringResource(R.string.prevention)}", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
                     Spacer(Modifier.height(8.dp))
                     Card(Modifier.fillMaxWidth(), shape = RoundedCornerShape(12.dp), colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surfaceContainerLow)) {
                         Column(Modifier.padding(16.dp)) {

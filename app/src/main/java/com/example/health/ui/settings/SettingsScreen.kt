@@ -12,10 +12,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.health.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -31,7 +33,7 @@ fun SettingsScreen(onBack: () -> Unit, viewModel: SettingsViewModel = hiltViewMo
     var showLanguageDialog by remember { mutableStateOf(false) }
 
     Scaffold(
-        topBar = { TopAppBar(title = { Text("Settings") }, navigationIcon = { IconButton(onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back") } }) }
+        topBar = { TopAppBar(title = { Text(stringResource(R.string.settings)) }, navigationIcon = { IconButton(onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back") } }) }
     ) { padding ->
         Column(Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState())) {
             // Appearance section
@@ -40,24 +42,31 @@ fun SettingsScreen(onBack: () -> Unit, viewModel: SettingsViewModel = hiltViewMo
             }
 
             // General section
-            SettingsSection("General") {
-                val langs = mapOf("en" to "English", "hi" to "हिन्दी", "gu" to "ગુજરાતી", "mr" to "मराठी", "ta" to "தமிழ்")
-                SettingsClickItem(Icons.Filled.Language, "Language", langs[language] ?: "English") { showLanguageDialog = true }
+            SettingsSection(stringResource(R.string.general)) {
+                val langs = mapOf(
+                    "en" to "English",
+                    "kn" to "ಕನ್ನಡ",
+                    "hi" to "हिन्दी",
+                    "gu" to "ગુજરાતી",
+                    "mr" to "मराठी",
+                    "ta" to "தமிழ்"
+                )
+                SettingsClickItem(Icons.Filled.Language, stringResource(R.string.language), langs[language] ?: "English") { showLanguageDialog = true }
             }
 
             // Accessibility section
-            SettingsSection("Accessibility") {
-                SettingsToggleItem(Icons.Filled.Contrast, "High Contrast", "Increase contrast for better visibility", highContrast) { viewModel.setHighContrast(it) }
-                SettingsToggleItem(Icons.Filled.TextFields, "Large Text", "Increase text size throughout app", largeText) { viewModel.setLargeText(it) }
-                SettingsToggleItem(Icons.Filled.Elderly, "Senior Mode", "Simplified interface with larger elements", seniorMode) { viewModel.setSeniorMode(it) }
-                SettingsToggleItem(Icons.Filled.Vibration, "Vibration Cues", "Haptic feedback for important actions", vibrationCues) { viewModel.setVibrationCues(it) }
-                SettingsToggleItem(Icons.Filled.RecordVoiceOver, "Voice-First Mode", "Automatically read emergency steps aloud", voiceFirstMode) { viewModel.setVoiceFirstMode(it) }
+            SettingsSection(stringResource(R.string.accessibility)) {
+                SettingsToggleItem(Icons.Filled.Contrast, stringResource(R.string.high_contrast), "Increase contrast for better visibility", highContrast) { viewModel.setHighContrast(it) }
+                SettingsToggleItem(Icons.Filled.TextFields, stringResource(R.string.large_text), "Increase text size throughout app", largeText) { viewModel.setLargeText(it) }
+                SettingsToggleItem(Icons.Filled.Elderly, stringResource(R.string.senior_mode), "Simplified interface with larger elements", seniorMode) { viewModel.setSeniorMode(it) }
+                SettingsToggleItem(Icons.Filled.Vibration, stringResource(R.string.haptic_feedback), "Haptic feedback for important actions", vibrationCues) { viewModel.setVibrationCues(it) }
+                SettingsToggleItem(Icons.Filled.RecordVoiceOver, stringResource(R.string.voice_first), "Automatically read emergency steps aloud", voiceFirstMode) { viewModel.setVoiceFirstMode(it) }
             }
 
             // About section
-            SettingsSection("About") {
+            SettingsSection(stringResource(R.string.about)) {
                 SettingsInfoItem(Icons.Filled.Info, "Version", "1.0.0")
-                SettingsInfoItem(Icons.Filled.Shield, "Medical Disclaimer", "Reviewed by Dr. Rajesh Kumar")
+                SettingsInfoItem(Icons.Filled.Shield, stringResource(R.string.disclaimer), "Reviewed by Dr. Rajesh Kumar")
                 SettingsInfoItem(Icons.Filled.Storage, "Data", "All data stored offline on device")
             }
 
@@ -87,10 +96,17 @@ fun SettingsScreen(onBack: () -> Unit, viewModel: SettingsViewModel = hiltViewMo
     if (showLanguageDialog) {
         AlertDialog(
             onDismissRequest = { showLanguageDialog = false },
-            title = { Text("Choose Language") },
+            title = { Text(stringResource(R.string.language)) },
             text = {
                 Column {
-                    listOf("en" to "English", "hi" to "हिन्दी", "gu" to "ગુજરાતી", "mr" to "मराठी", "ta" to "தமிழ்").forEach { (code, name) ->
+                    listOf(
+                        "en" to "English",
+                        "kn" to "ಕನ್ನಡ",
+                        "hi" to "हिन्दी",
+                        "gu" to "ગુજરાતી",
+                        "mr" to "मराठी",
+                        "ta" to "தமிழ்"
+                    ).forEach { (code, name) ->
                         Row(Modifier.fillMaxWidth().padding(vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
                             RadioButton(selected = language == code, onClick = { viewModel.setLanguage(code); showLanguageDialog = false })
                             Spacer(Modifier.width(8.dp))

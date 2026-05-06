@@ -70,7 +70,7 @@ fun AppNavGraph(
         NavHost(
             navController = navController,
             startDestination = startDest,
-            modifier = Modifier.padding(innerPadding),
+            modifier = Modifier.padding(innerPadding).consumeWindowInsets(innerPadding),
             enterTransition = { fadeIn(tween(200)) + slideInHorizontally(tween(250)) { it / 6 } },
             exitTransition = { fadeOut(tween(200)) },
             popEnterTransition = { fadeIn(tween(200)) + slideInHorizontally(tween(250)) { -it / 6 } },

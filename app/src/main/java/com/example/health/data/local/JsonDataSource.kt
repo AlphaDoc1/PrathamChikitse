@@ -19,8 +19,8 @@ class JsonDataSource @Inject constructor(
 
     private inline fun <reified T> loadJson(fileName: String): Result<T> {
         return try {
-            val isKn = context.resources.configuration.locales[0].language == "kn"
-            val targetFileName = if (isKn) fileName.replace(".json", "_kn.json") else fileName
+            val lang = java.util.Locale.getDefault().language
+            val targetFileName = if (lang != "en") fileName.replace(".json", "_${lang}.json") else fileName
             val json = try {
                 context.assets.open(targetFileName).bufferedReader().use { it.readText() }
             } catch (e: Exception) {
