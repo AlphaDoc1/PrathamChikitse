@@ -1,0 +1,111 @@
+{
+  "version": "1.0.0",
+  "lastUpdated": "2026-05-01",
+  "language": "en",
+  "hospitals": [
+    {
+      "id": "h1",
+      "name": "AIIMS Delhi",
+      "address": "Sri Aurobindo Marg, Ansari Nagar, New Delhi, 110029",
+      "phone": "011-26588500",
+      "type": "Government",
+      "specialties": ["Trauma Center","Emergency","Cardiology","Neurology","Orthopedics"],
+      "latitude": 28.5672,
+      "longitude": 77.2100,
+      "emergencyAvailable": true,
+      "ambulanceAvailable": true,
+      "open24x7": true
+    },
+    {
+      "id": "h2",
+      "name": "Safdarjung Hospital",
+      "address": "Ansari Nagar West, New Delhi, 110029",
+      "phone": "011-26707437",
+      "type": "Government",
+      "specialties": ["Emergency","General Surgery","Orthopedics","Burns Unit"],
+      "latitude": 28.5685,
+      "longitude": 77.2065,
+      "emergencyAvailable": true,
+      "ambulanceAvailable": true,
+      "open24x7": true
+    },
+    {
+      "id": "h3",
+      "name": "Apollo Hospital",
+      "address": "Sarita Vihar, Delhi-Mathura Road, New Delhi, 110076",
+      "phone": "011-71791090",
+      "type": "Private",
+      "specialties": ["Emergency","Cardiology","Neurology","Oncology","Transplant"],
+      "latitude": 28.5305,
+      "longitude": 77.2890,
+      "emergencyAvailable": true,
+      "ambulanceAvailable": true,
+      "open24x7": true
+    },
+    {
+      "id": "h4",
+      "name": "Fortis Hospital",
+      "address": "Sector B, Pocket 1, Aruna Asaf Ali Marg, Vasant Kunj, New Delhi, 110070",
+      "phone": "011-42776222",
+      "type": "Private",
+      "specialties": ["Emergency","Cardiology","Orthopedics","Neurosciences"],
+      "latitude": 28.5218,
+      "longitude": 77.1580,
+      "emergencyAvailable": true,
+      "ambulanceAvailable": true,
+      "open24x7": true
+    },
+    {
+      "id": "h5",
+      "name": "Sir Ganga Ram Hospital",
+      "address": "Rajinder Nagar, New Delhi, 110060",
+      "phone": "011-25750000",
+      "type": "Private",
+      "specialties": ["Emergency","Gastroenterology","Nephrology","Cardiology"],
+      "latitude": 28.6382,
+      "longitude": 77.1886,
+      "emergencyAvailable": true,
+      "ambulanceAvailable": true,
+      "open24x7": true
+    },
+    {
+      "id": "h6",
+      "name": "Max Super Speciality Hospital",
+      "address": "1, 2, Press Enclave Road, Saket, New Delhi, 110017",
+      "phone": "011-26515050",
+      "type": "Private",
+      "specialties": ["Emergency","Oncology","Cardiology","Neurology","Orthopedics"],
+      "latitude": 28.5275,
+      "longitude": 77.2137,
+      "emergencyAvailable": true,
+      "ambulanceAvailable": true,
+      "open24x7": true
+    },
+    {
+      "id": "h7",
+      "name": "Lok Nayak Jai Prakash Hospital",
+      "address": "Jawaharlal Nehru Marg, Delhi Gate, New Delhi, 110002",
+      "phone": "011-23232400",
+      "type": "Government",
+      "specialties": ["Emergency","General Medicine","General Surgery","Pediatrics"],
+      "latitude": 28.6375,
+      "longitude": 77.2405,
+      "emergencyAvailable": true,
+      "ambulanceAvailable": true,
+      "open24x7": true
+    },
+    {
+      "id": "h8",
+      "name": "Medanta - The Medicity",
+      "address": "CH Baktawar Singh Rd, Sector 38, Gurugram, Haryana, 122001",
+      "phone": "0124-4141414",
+      "type": "Private",
+      "specialties": ["Emergency","Heart Institute","Neurosciences","Transplant","Robotics Surgery"],
+      "latitude": 28.4398,
+      "longitude": 77.0426,
+      "emergencyAvailable": true,
+      "ambulanceAvailable": true,
+      "open24x7": true
+    }
+  ]
+}
