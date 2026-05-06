@@ -108,9 +108,11 @@ cd PrathamChikitse
 3. Select the `PrathamChikitse` root directory.
 4. Allow Gradle a few moments to sync the project dependencies. 
 
-### Step 3: Configure Environment
-There are no external API keys required to run this project! However, you must ensure your Java environment is set correctly:
-- **Windows / Linux / macOS**: Go to `File > Settings` (or `Android Studio > Preferences` on Mac) > `Build, Execution, Deployment > Build Tools > Gradle`. Ensure the **Gradle JDK** is set to `jbr-17` or your installed JDK 17.
+### Step 3: Zero-Configuration Run
+This project is built to be **plug-and-play**. Because it relies entirely on local JSON assets instead of complex backend databases:
+- 🚫 **No API Keys Required**: You do not need to hunt for secrets or register for APIs.
+- 🚫 **No Manual local.properties**: Android Studio will automatically generate your `local.properties` file with your specific SDK path during the first sync.
+- ✅ **JDK Setup**: Just ensure your Java environment is set correctly. Go to `File > Settings` (or `Android Studio > Preferences` on Mac) > `Build, Execution, Deployment > Build Tools > Gradle` and ensure the **Gradle JDK** is set to `jbr-17` or your installed JDK 17.
 
 ---
 
