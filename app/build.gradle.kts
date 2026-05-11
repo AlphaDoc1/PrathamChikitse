@@ -1,3 +1,6 @@
+import java.io.FileInputStream
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
@@ -5,8 +8,14 @@ plugins {
     alias(libs.plugins.hilt.android)
 }
 
+// Read Gemini API key from local.properties (gitignored)
+val localProps = Properties()
+val localPropsFile = rootProject.file("local.properties")
+if (localPropsFile.exists()) localProps.load(FileInputStream(localPropsFile))
+
 android {
     namespace = "com.example.health"
+
     compileSdk {
         version = release(36) {
             minorApiLevel = 1
@@ -21,6 +30,12 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField(
+            "String",
+            "GEMINI_API_KEY",
+            "\"${localProps.getProperty("GEMINI_API_KEY", "")}\""
+        )
     }
 
     buildTypes {
@@ -38,6 +53,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 
@@ -76,6 +92,9 @@ dependencies {
 
     // Location
     implementation(libs.play.services.location)
+
+    // Google Gemini AI
+    implementation(libs.google.generativeai)
 
     // Testing
     testImplementation(libs.junit)

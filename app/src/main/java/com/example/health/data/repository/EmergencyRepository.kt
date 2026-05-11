@@ -80,7 +80,7 @@ constructor(
                     lowerQuery == kw -> score += 10f
                     lowerQuery.contains(kw) -> score += 5f
                     words.any { it == kw } -> score += 4f
-                    words.any { kw.contains(it) && it.length > 2 } -> score += 2f
+                    words.any { kw.contains(it) && it.length > 3 } -> score += 2f
                 }
             }
             if (category.name.lowercase().let { lowerQuery.contains(it) }) score += 8f
@@ -90,7 +90,7 @@ constructor(
             }
         }
 
-        return if (bestMatch != null && bestScore >= 2f) {
+        return if (bestMatch != null && bestScore >= 4f) {
             val confidence = (bestScore / 15f).coerceAtMost(1f)
             TriageResult(
                     matchedCategory = bestMatch,

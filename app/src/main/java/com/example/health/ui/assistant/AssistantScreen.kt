@@ -2,6 +2,7 @@ package com.example.health.ui.assistant
 
 import android.content.Intent
 import android.net.Uri
+import androidx.compose.animation.core.*
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -20,10 +21,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.health.R
+import com.example.health.data.model.Hospital
 import com.example.health.ui.theme.HealthThemeExtras
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -36,10 +40,11 @@ fun AssistantScreen(
 ) {
     val messages by viewModel.messages.collectAsStateWithLifecycle()
     val inputText by viewModel.inputText.collectAsStateWithLifecycle()
+    val isTyping by viewModel.isTyping.collectAsStateWithLifecycle()
     val listState = rememberLazyListState()
     val context = LocalContext.current
 
-    LaunchedEffect(messages.size) {
+    LaunchedEffect(messages.size, isTyping) {
         if (messages.isNotEmpty()) listState.animateScrollToItem(messages.size - 1)
     }
 
@@ -49,7 +54,7 @@ fun AssistantScreen(
                 title = {
                     Column {
                         Text(stringResource(R.string.assistant_title), style = MaterialTheme.typography.titleMedium)
-                        Text("Offline • Keyword Engine", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text("Local + Gemini AI", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 },
                 navigationIcon = { IconButton(onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back") } }
@@ -65,6 +70,7 @@ fun AssistantScreen(
             ) {
                 items(messages) { msg ->
                     if (msg.isUser) {
+                        // ── User message bubble ──
                         Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.End) {
                             Card(
                                 shape = RoundedCornerShape(16.dp, 16.dp, 4.dp, 16.dp),
@@ -74,80 +80,136 @@ fun AssistantScreen(
                             }
                         }
                     } else {
+                        // ── Bot message ──
                         Column {
+                            // Header: avatar + label + optional Gemini badge
                             Row(verticalAlignment = Alignment.CenterVertically) {
                                 Box(Modifier.size(28.dp).background(MaterialTheme.colorScheme.primaryContainer, CircleShape), Alignment.Center) {
                                     Icon(Icons.Filled.SmartToy, null, Modifier.size(16.dp), MaterialTheme.colorScheme.primary)
                                 }
                                 Spacer(Modifier.width(8.dp))
                                 Text("Assistant", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+
+                                if (msg.isGeminiResponse) {
+                                    Spacer(Modifier.width(6.dp))
+                                    Surface(
+                                        shape = RoundedCornerShape(4.dp),
+                                        color = MaterialTheme.colorScheme.tertiaryContainer,
+                                        contentColor = MaterialTheme.colorScheme.onTertiaryContainer
+                                    ) {
+                                        Row(Modifier.padding(horizontal = 6.dp, vertical = 2.dp), verticalAlignment = Alignment.CenterVertically) {
+                                            Icon(Icons.Filled.AutoAwesome, null, Modifier.size(10.dp))
+                                            Spacer(Modifier.width(3.dp))
+                                            Text("Gemini AI", style = MaterialTheme.typography.labelSmall, fontSize = 9.sp)
+                                        }
+                                    }
+                                }
                             }
                             Spacer(Modifier.height(4.dp))
-                            Card(
-                                shape = RoundedCornerShape(4.dp, 16.dp, 16.dp, 16.dp),
-                                colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surfaceContainerLow)
-                            ) {
-                                Column(Modifier.padding(12.dp)) {
-                                    Text(msg.text, style = MaterialTheme.typography.bodyMedium)
 
-                                    msg.triageResult?.let { result ->
-                                        if (result.matchedCategory != null) {
-                                            Spacer(Modifier.height(12.dp))
-                                            // Urgency indicator
-                                            val urgencyColor = when {
-                                                result.urgencyLevel >= 4 -> HealthThemeExtras.colors.emergency
-                                                result.urgencyLevel >= 3 -> HealthThemeExtras.colors.warning
-                                                else -> HealthThemeExtras.colors.safe
-                                            }
-                                            Card(shape = RoundedCornerShape(8.dp), colors = CardDefaults.cardColors(urgencyColor.copy(0.1f))) {
-                                                Row(Modifier.padding(8.dp), verticalAlignment = Alignment.CenterVertically) {
-                                                    Text("${result.matchedCategory.icon} ", style = MaterialTheme.typography.titleMedium)
-                                                    Text("${result.matchedCategory.name} • Urgency: ${result.urgencyLevel}/5", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold, color = urgencyColor)
-                                                }
-                                            }
+                            // ── Hospital cards (rich UI) ──
+                            if (msg.hospitals.isNotEmpty()) {
+                                Card(
+                                    shape = RoundedCornerShape(4.dp, 16.dp, 16.dp, 16.dp),
+                                    colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surfaceContainerLow)
+                                ) {
+                                    Column(Modifier.padding(12.dp)) {
+                                        Text(msg.text, style = MaterialTheme.typography.bodyMedium)
+                                        Spacer(Modifier.height(8.dp))
 
-                                            // Immediate actions
-                                            if (result.immediateActions.isNotEmpty()) {
-                                                Spacer(Modifier.height(8.dp))
-                                                Text("Immediate Steps:", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
-                                                result.immediateActions.forEachIndexed { i, step ->
-                                                    Text("${i + 1}. $step", style = MaterialTheme.typography.bodySmall, modifier = Modifier.padding(top = 2.dp))
+                                        msg.hospitals.forEach { hospital ->
+                                            ChatHospitalCard(
+                                                hospital = hospital,
+                                                userLat = msg.userLat,
+                                                userLng = msg.userLng,
+                                                onCall = {
+                                                    context.startActivity(Intent(Intent.ACTION_DIAL, Uri.parse("tel:${hospital.phone}")))
+                                                },
+                                                onMap = {
+                                                    val uri = Uri.parse("geo:${hospital.latitude},${hospital.longitude}?q=${Uri.encode(hospital.name)}")
+                                                    context.startActivity(Intent(Intent.ACTION_VIEW, uri))
                                                 }
-                                            }
+                                            )
+                                            Spacer(Modifier.height(8.dp))
+                                        }
 
-                                            // CTA buttons
-                                            Spacer(Modifier.height(12.dp))
-                                            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                                                FilledTonalButton(onClick = { onNavigateToCategory(result.matchedCategory.id) }, modifier = Modifier.weight(1f)) {
-                                                    Icon(Icons.Filled.MenuBook, null, Modifier.size(16.dp))
-                                                    Spacer(Modifier.width(4.dp))
-                                                    Text("Full Guide", style = MaterialTheme.typography.labelSmall)
+                                        // "View All" button
+                                        FilledTonalButton(
+                                            onClick = onNavigateToHospitals,
+                                            modifier = Modifier.fillMaxWidth()
+                                        ) {
+                                            Icon(Icons.Filled.LocalHospital, null, Modifier.size(16.dp))
+                                            Spacer(Modifier.width(4.dp))
+                                            Text("View All Hospitals")
+                                        }
+                                    }
+                                }
+                            }
+                            // ── Triage result card ──
+                            else if (msg.triageResult != null || msg.text.isNotBlank()) {
+                                Card(
+                                    shape = RoundedCornerShape(4.dp, 16.dp, 16.dp, 16.dp),
+                                    colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surfaceContainerLow)
+                                ) {
+                                    Column(Modifier.padding(12.dp)) {
+                                        Text(msg.text, style = MaterialTheme.typography.bodyMedium)
+
+                                        msg.triageResult?.let { result ->
+                                            if (result.matchedCategory != null) {
+                                                Spacer(Modifier.height(12.dp))
+                                                val urgencyColor = when {
+                                                    result.urgencyLevel >= 4 -> HealthThemeExtras.colors.emergency
+                                                    result.urgencyLevel >= 3 -> HealthThemeExtras.colors.warning
+                                                    else -> HealthThemeExtras.colors.safe
                                                 }
-                                                if (result.callEmergency) {
-                                                    Button(
-                                                        onClick = { context.startActivity(Intent(Intent.ACTION_DIAL, Uri.parse("tel:108"))) },
-                                                        modifier = Modifier.weight(1f),
-                                                        colors = ButtonDefaults.buttonColors(HealthThemeExtras.colors.emergency)
-                                                    ) {
-                                                        Icon(Icons.Filled.Phone, null, Modifier.size(16.dp))
-                                                        Spacer(Modifier.width(4.dp))
-                                                        Text("Call 108", style = MaterialTheme.typography.labelSmall)
+                                                Card(shape = RoundedCornerShape(8.dp), colors = CardDefaults.cardColors(urgencyColor.copy(0.1f))) {
+                                                    Row(Modifier.padding(8.dp), verticalAlignment = Alignment.CenterVertically) {
+                                                        Text("${result.matchedCategory.icon} ", style = MaterialTheme.typography.titleMedium)
+                                                        Text("${result.matchedCategory.name} • Urgency: ${result.urgencyLevel}/5", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold, color = urgencyColor)
                                                     }
                                                 }
-                                            }
-                                            FilledTonalButton(onClick = onNavigateToHospitals, modifier = Modifier.fillMaxWidth()) {
-                                                Icon(Icons.Filled.LocalHospital, null, Modifier.size(16.dp))
-                                                Spacer(Modifier.width(4.dp))
-                                                Text("Find Hospitals")
-                                            }
-                                        } else if (result.callEmergency) {
-                                            Spacer(Modifier.height(8.dp))
-                                            Button(
-                                                onClick = { context.startActivity(Intent(Intent.ACTION_DIAL, Uri.parse("tel:108"))) },
-                                                colors = ButtonDefaults.buttonColors(HealthThemeExtras.colors.emergency),
-                                                modifier = Modifier.fillMaxWidth()
-                                            ) {
-                                                Icon(Icons.Filled.Phone, null); Spacer(Modifier.width(4.dp)); Text("Call 108 Now")
+
+                                                if (result.immediateActions.isNotEmpty()) {
+                                                    Spacer(Modifier.height(8.dp))
+                                                    Text("Immediate Steps:", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
+                                                    result.immediateActions.forEachIndexed { i, step ->
+                                                        Text("${i + 1}. $step", style = MaterialTheme.typography.bodySmall, modifier = Modifier.padding(top = 2.dp))
+                                                    }
+                                                }
+
+                                                Spacer(Modifier.height(12.dp))
+                                                Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                                                    FilledTonalButton(onClick = { onNavigateToCategory(result.matchedCategory.id) }, modifier = Modifier.weight(1f)) {
+                                                        Icon(Icons.Filled.MenuBook, null, Modifier.size(16.dp))
+                                                        Spacer(Modifier.width(4.dp))
+                                                        Text("Full Guide", style = MaterialTheme.typography.labelSmall)
+                                                    }
+                                                    if (result.callEmergency) {
+                                                        Button(
+                                                            onClick = { context.startActivity(Intent(Intent.ACTION_DIAL, Uri.parse("tel:108"))) },
+                                                            modifier = Modifier.weight(1f),
+                                                            colors = ButtonDefaults.buttonColors(HealthThemeExtras.colors.emergency)
+                                                        ) {
+                                                            Icon(Icons.Filled.Phone, null, Modifier.size(16.dp))
+                                                            Spacer(Modifier.width(4.dp))
+                                                            Text("Call 108", style = MaterialTheme.typography.labelSmall)
+                                                        }
+                                                    }
+                                                }
+                                                FilledTonalButton(onClick = onNavigateToHospitals, modifier = Modifier.fillMaxWidth()) {
+                                                    Icon(Icons.Filled.LocalHospital, null, Modifier.size(16.dp))
+                                                    Spacer(Modifier.width(4.dp))
+                                                    Text("Find Hospitals")
+                                                }
+                                            } else if (result.callEmergency) {
+                                                Spacer(Modifier.height(8.dp))
+                                                Button(
+                                                    onClick = { context.startActivity(Intent(Intent.ACTION_DIAL, Uri.parse("tel:108"))) },
+                                                    colors = ButtonDefaults.buttonColors(HealthThemeExtras.colors.emergency),
+                                                    modifier = Modifier.fillMaxWidth()
+                                                ) {
+                                                    Icon(Icons.Filled.Phone, null); Spacer(Modifier.width(4.dp)); Text("Call 108 Now")
+                                                }
                                             }
                                         }
                                     }
@@ -155,6 +217,11 @@ fun AssistantScreen(
                             }
                         }
                     }
+                }
+
+                // Typing indicator
+                if (isTyping) {
+                    item { TypingIndicator() }
                 }
             }
 
@@ -176,10 +243,133 @@ fun AssistantScreen(
                     Spacer(Modifier.width(8.dp))
                     FilledIconButton(
                         onClick = { viewModel.sendMessage() },
-                        enabled = inputText.isNotBlank()
+                        enabled = inputText.isNotBlank() && !isTyping
                     ) {
                         Icon(Icons.AutoMirrored.Filled.Send, "Send")
                     }
+                }
+            }
+        }
+    }
+}
+
+/**
+ * Rich hospital card rendered inline in the chat — mirrors the HospitalScreen card design.
+ */
+@Composable
+private fun ChatHospitalCard(
+    hospital: Hospital,
+    userLat: Double,
+    userLng: Double,
+    onCall: () -> Unit,
+    onMap: () -> Unit
+) {
+    val distance = if (userLat != 0.0 || userLng != 0.0) {
+        val km = hospital.distanceTo(userLat, userLng)
+        if (km < 1.0) "%.0f m".format(km * 1000) else "%.1f km".format(km)
+    } else ""
+
+    Card(
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surfaceContainer)
+    ) {
+        Column(Modifier.padding(12.dp)) {
+            Row(verticalAlignment = Alignment.Top) {
+                Column(Modifier.weight(1f)) {
+                    Text(hospital.name, style = MaterialTheme.typography.titleSmall, fontWeight = FontWeight.SemiBold)
+                    Spacer(Modifier.height(2.dp))
+                    Text(
+                        hospital.address,
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+                if (distance.isNotBlank()) {
+                    AssistChip(
+                        onClick = {},
+                        label = { Text(distance, style = MaterialTheme.typography.labelSmall) },
+                        leadingIcon = { Icon(Icons.Filled.NearMe, null, Modifier.size(14.dp)) }
+                    )
+                }
+            }
+            Spacer(Modifier.height(6.dp))
+            Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                if (hospital.emergencyAvailable) {
+                    AssistChip(
+                        onClick = {},
+                        label = { Text("Emergency", style = MaterialTheme.typography.labelSmall) },
+                        leadingIcon = { Icon(Icons.Filled.LocalHospital, null, Modifier.size(14.dp), tint = HealthThemeExtras.colors.emergency) }
+                    )
+                }
+                if (hospital.open24x7) {
+                    AssistChip(
+                        onClick = {},
+                        label = { Text("24×7", style = MaterialTheme.typography.labelSmall) },
+                        leadingIcon = { Icon(Icons.Filled.Schedule, null, Modifier.size(14.dp)) }
+                    )
+                }
+                Text(
+                    hospital.type,
+                    style = MaterialTheme.typography.labelSmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.align(Alignment.CenterVertically)
+                )
+            }
+            Spacer(Modifier.height(6.dp))
+            Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                OutlinedButton(onCall, Modifier.weight(1f)) {
+                    Icon(Icons.Filled.Phone, null, Modifier.size(16.dp))
+                    Spacer(Modifier.width(4.dp))
+                    Text(stringResource(R.string.call), style = MaterialTheme.typography.labelSmall)
+                }
+                Button(onMap, Modifier.weight(1f)) {
+                    Icon(Icons.Filled.Map, null, Modifier.size(16.dp))
+                    Spacer(Modifier.width(4.dp))
+                    Text(stringResource(R.string.directions), style = MaterialTheme.typography.labelSmall)
+                }
+            }
+        }
+    }
+}
+
+/**
+ * Animated three-dot typing indicator shown while waiting for a response.
+ */
+@Composable
+private fun TypingIndicator() {
+    val infiniteTransition = rememberInfiniteTransition(label = "typing")
+
+    Row(verticalAlignment = Alignment.CenterVertically) {
+        Box(Modifier.size(28.dp).background(MaterialTheme.colorScheme.primaryContainer, CircleShape), Alignment.Center) {
+            Icon(Icons.Filled.SmartToy, null, Modifier.size(16.dp), MaterialTheme.colorScheme.primary)
+        }
+        Spacer(Modifier.width(8.dp))
+        Card(
+            shape = RoundedCornerShape(4.dp, 16.dp, 16.dp, 16.dp),
+            colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surfaceContainerLow)
+        ) {
+            Row(Modifier.padding(horizontal = 16.dp, vertical = 12.dp), horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                repeat(3) { index ->
+                    val delay = index * 200
+                    val alpha by infiniteTransition.animateFloat(
+                        initialValue = 0.3f,
+                        targetValue = 1f,
+                        animationSpec = infiniteRepeatable(
+                            animation = tween(600, delayMillis = delay),
+                            repeatMode = RepeatMode.Reverse
+                        ),
+                        label = "dot$index"
+                    )
+                    Box(
+                        Modifier
+                            .size(8.dp)
+                            .background(
+                                MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = alpha),
+                                CircleShape
+                            )
+                    )
                 }
             }
         }
