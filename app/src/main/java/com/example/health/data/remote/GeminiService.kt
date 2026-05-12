@@ -18,9 +18,9 @@ import javax.inject.Singleton
 @Singleton
 class GeminiService @Inject constructor() {
 
-    private val apiKey: String = BuildConfig.GEMINI_API_KEY
+    private val apiKey: String = BuildConfig.API_KEY
 
-    /** True when a valid API key has been configured in local.properties. */
+    /** True when a valid API key has been configured in the build environment. */
     val isAvailable: Boolean
         get() = apiKey.isNotBlank()
 

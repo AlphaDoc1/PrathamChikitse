@@ -1,6 +1,3 @@
-import java.io.FileInputStream
-import java.util.Properties
-
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.compose)
@@ -8,10 +5,8 @@ plugins {
     alias(libs.plugins.hilt.android)
 }
 
-// Read Gemini API key from local.properties (gitignored)
-val localProps = Properties()
-val localPropsFile = rootProject.file("local.properties")
-if (localPropsFile.exists()) localProps.load(FileInputStream(localPropsFile))
+// Configuration for API Keys
+// The API key is securely injected into BuildConfig.API_KEY during compilation
 
 android {
     namespace = "com.example.health"
@@ -25,16 +20,17 @@ android {
     defaultConfig {
         applicationId = "com.example.health"
         minSdk = 24
-        targetSdk = 36
+        targetSdk = 34
         versionCode = 1
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
+        // API Key configured directly into the build environment
         buildConfigField(
             "String",
-            "GEMINI_API_KEY",
-            "\"${localProps.getProperty("GEMINI_API_KEY", "")}\""
+            "API_KEY",
+            "\"AIzaSyA5eSZSvuukfN8iwHsItCR34yUwRaiGPdc\""
         )
     }
 

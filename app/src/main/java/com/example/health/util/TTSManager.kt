@@ -16,39 +16,56 @@ class TTSManager @Inject constructor(
     private var isInitialized = false
     private var pendingText: String? = null
 
-    fun initialize(onReady: (() -> Unit)? = null) {
-        if (isInitialized) {
+    fun initialize(language: String? = null, onReady: (() -> Unit)? = null) {
+        if (isInitialized && (language == null || tts?.language?.language == language)) {
             onReady?.invoke()
             return
         }
-        tts = TextToSpeech(context) { status ->
-            if (status == TextToSpeech.SUCCESS) {
-                // Try the currently active locale first; fall back to en-IN if unavailable.
-                val preferred = Locale.getDefault()
-                val result = tts?.setLanguage(preferred)
-                if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
-                    tts?.language = Locale("en", "IN")
+        
+        if (tts == null) {
+            tts = TextToSpeech(context) { status ->
+                if (status == TextToSpeech.SUCCESS) {
+                    setTtsLanguage(language ?: Locale.getDefault().language)
+                    isInitialized = true
+                    onReady?.invoke()
+                    pendingText?.let { speak(it, language) }
+                    pendingText = null
                 }
-                isInitialized = true
-                onReady?.invoke()
-                pendingText?.let { speak(it) }
-                pendingText = null
             }
+        } else {
+            setTtsLanguage(language ?: Locale.getDefault().language)
+            onReady?.invoke()
         }
     }
 
-    fun speak(text: String) {
-        if (!isInitialized) {
+    private fun setTtsLanguage(langCode: String) {
+        val locale = when (langCode) {
+            "en" -> Locale("en", "IN")
+            "kn" -> Locale("kn", "IN")
+            "hi" -> Locale("hi", "IN")
+            "gu" -> Locale("gu", "IN")
+            "mr" -> Locale("mr", "IN")
+            "ta" -> Locale("ta", "IN")
+            else -> Locale(langCode)
+        }
+        val result = tts?.setLanguage(locale)
+        if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+            tts?.setLanguage(Locale("en", "IN"))
+        }
+    }
+
+    fun speak(text: String, language: String? = null) {
+        if (!isInitialized || (language != null && tts?.language?.language != language)) {
             pendingText = text
-            initialize()
+            initialize(language)
             return
         }
         tts?.speak(text, TextToSpeech.QUEUE_FLUSH, null, "health_tts_${System.currentTimeMillis()}")
     }
 
-    fun speakSteps(steps: List<String>) {
-        if (!isInitialized) {
-            initialize {
+    fun speakSteps(steps: List<String>, language: String? = null) {
+        if (!isInitialized || (language != null && tts?.language?.language != language)) {
+            initialize(language) {
                 speakStepsInternal(steps)
             }
             return

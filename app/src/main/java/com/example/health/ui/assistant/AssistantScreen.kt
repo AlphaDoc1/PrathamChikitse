@@ -61,7 +61,7 @@ fun AssistantScreen(
             )
         }
     ) { padding ->
-        Column(Modifier.fillMaxSize().padding(padding)) {
+        Column(Modifier.fillMaxSize().padding(padding).imePadding()) {
             LazyColumn(
                 modifier = Modifier.weight(1f).fillMaxWidth(),
                 state = listState,
