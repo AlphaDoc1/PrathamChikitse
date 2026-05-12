@@ -1,12 +1,14 @@
 package com.example.health.ui.hospital
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.health.data.model.Hospital
 import com.example.health.data.repository.HospitalRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -36,38 +38,44 @@ class HospitalViewModel @Inject constructor(
     }
 
     private fun loadHospitals() {
-        hospitalRepo.getHospitals().fold(
-            onSuccess = {
-                _hospitals.value = it
-                _isLoading.value = false
-            },
-            onFailure = {
-                _error.value = it.message
-                _isLoading.value = false
-            }
-        )
+        viewModelScope.launch {
+            hospitalRepo.getHospitals().fold(
+                onSuccess = {
+                    _hospitals.value = it
+                    _isLoading.value = false
+                },
+                onFailure = {
+                    _error.value = it.message
+                    _isLoading.value = false
+                }
+            )
+        }
     }
 
     fun updateLocation(lat: Double?, lng: Double?) {
-        if (lat != null && lng != null) {
-            _userLat.value = lat
-            _userLng.value = lng
-            _hasLocation.value = true
-            _hospitals.value = hospitalRepo.getHospitalsForLocation(lat, lng)
-        } else {
-            // Default fallback to Bangalore
-            _hasLocation.value = false
-            _hospitals.value = hospitalRepo.getHospitalsForLocation(12.9716, 77.5946)
+        viewModelScope.launch {
+            if (lat != null && lng != null) {
+                _userLat.value = lat
+                _userLng.value = lng
+                _hasLocation.value = true
+                _hospitals.value = hospitalRepo.getHospitalsForLocation(lat, lng)
+            } else {
+                // Default fallback to Bangalore
+                _hasLocation.value = false
+                _hospitals.value = hospitalRepo.getHospitalsForLocation(12.9716, 77.5946)
+            }
         }
     }
 
     fun search(query: String) {
         _searchQuery.value = query
-        _hospitals.value = if (query.isBlank()) {
-            if (_hasLocation.value) hospitalRepo.getHospitalsForLocation(_userLat.value, _userLng.value)
-            else hospitalRepo.getHospitalsForLocation(12.9716, 77.5946)
-        } else {
-            hospitalRepo.searchHospitals(query)
+        viewModelScope.launch {
+            _hospitals.value = if (query.isBlank()) {
+                if (_hasLocation.value) hospitalRepo.getHospitalsForLocation(_userLat.value, _userLng.value)
+                else hospitalRepo.getHospitalsForLocation(12.9716, 77.5946)
+            } else {
+                hospitalRepo.searchHospitals(query)
+            }
         }
     }
 

@@ -35,7 +35,7 @@ fun HomeScreen(
     val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
 
     if (uiState.isLoading) { ShimmerEffect(); return }
-    if (uiState.error != null) { ErrorState(message = uiState.error ?: "Unknown error"); return }
+    if (uiState.error != null) { ErrorState(message = uiState.error ?: stringResource(R.string.unknown_error)); return }
 
     LazyColumn(
         modifier = Modifier.fillMaxSize(),
@@ -56,9 +56,9 @@ fun HomeScreen(
                 onValueChange = { viewModel.search(it) },
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
                 placeholder = { Text(stringResource(R.string.search_placeholder)) },
-                leadingIcon = { Icon(Icons.Filled.Search, "Search") },
+                leadingIcon = { Icon(Icons.Filled.Search, stringResource(R.string.search)) },
                 trailingIcon = {
-                    if (searchQuery.isNotEmpty()) IconButton({ viewModel.search("") }) { Icon(Icons.Filled.Clear, "Clear") }
+                    if (searchQuery.isNotEmpty()) IconButton({ viewModel.search("") }) { Icon(Icons.Filled.Clear, stringResource(R.string.clear)) }
                 },
                 singleLine = true,
                 shape = RoundedCornerShape(16.dp)

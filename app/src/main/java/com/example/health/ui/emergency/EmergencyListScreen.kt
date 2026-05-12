@@ -32,8 +32,8 @@ fun EmergencyListScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Emergency Guides") },
-                navigationIcon = { IconButton(onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back") } }
+                title = { Text(stringResource(R.string.emergency_guides)) },
+                navigationIcon = { IconButton(onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.back)) } }
             )
         }
     ) { padding ->
@@ -41,16 +41,16 @@ fun EmergencyListScreen(
             OutlinedTextField(
                 value = query, onValueChange = { query = it },
                 modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-                placeholder = { Text("Search emergencies...") },
-                leadingIcon = { Icon(Icons.Filled.Search, null) },
-                trailingIcon = { if (query.isNotEmpty()) IconButton({ query = "" }) { Icon(Icons.Filled.Clear, null) } },
+                placeholder = { Text(stringResource(R.string.search_placeholder)) },
+                leadingIcon = { Icon(Icons.Filled.Search, stringResource(R.string.search)) },
+                trailingIcon = { if (query.isNotEmpty()) IconButton({ query = "" }) { Icon(Icons.Filled.Clear, stringResource(R.string.clear)) } },
                 singleLine = true, shape = RoundedCornerShape(16.dp)
             )
             Spacer(Modifier.height(8.dp))
 
             when {
                 isLoading -> ShimmerEffect()
-                error != null -> ErrorState(message = error ?: "Error")
+                error != null -> ErrorState(message = error ?: stringResource(R.string.error))
                 else -> {
                     val filtered = if (query.isBlank()) categories
                     else categories.filter { c -> c.name.contains(query, true) || c.keywords.any { it.contains(query, true) } }

@@ -21,6 +21,9 @@
     <string name="haptic_feedback">हैप्टिक फीडबैक</string>
     <string name="voice_first">वॉइस-फर्स्ट मोड</string>
     <string name="about">के बारे में</string>
+    <string name="created_by">द्वारा बनाया गया</string>
+    <string name="dev_name">Hemanth Sainath Savanth</string>
+    <string name="app_created_by">यह ऐप %s द्वारा बनाया गया है</string>
     <string name="disclaimer">चिकित्सा अस्वीकरण</string>
     <string name="sos_mode">SOS मोड</string>
     <string name="tap_to_cancel">रद्द करने के लिए टैप करें</string>

@@ -1,6 +1,7 @@
 package com.example.health.ui.learning
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.example.health.data.model.LearningModule
 import com.example.health.data.model.MythFact
 import com.example.health.data.repository.LearningRepository
@@ -8,6 +9,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
@@ -35,13 +37,17 @@ class LearningViewModel @Inject constructor(
     }
 
     private fun loadData() {
-        learningRepo.getModules().onSuccess { _modules.value = it }
-        learningRepo.getMyths().onSuccess { _myths.value = it }
-        _isLoading.value = false
+        viewModelScope.launch {
+            learningRepo.getModules().onSuccess { _modules.value = it }
+            learningRepo.getMyths().onSuccess { _myths.value = it }
+            _isLoading.value = false
+        }
     }
 
     fun selectModule(id: String) {
-        _selectedModule.value = learningRepo.getModuleById(id)
+        viewModelScope.launch {
+            _selectedModule.value = learningRepo.getModuleById(id)
+        }
     }
 
     fun selectTab(index: Int) {

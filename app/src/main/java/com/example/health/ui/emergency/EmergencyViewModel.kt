@@ -40,29 +40,33 @@ class EmergencyViewModel @Inject constructor(
     }
 
     private fun loadCategories() {
-        emergencyRepo.getCategories().fold(
-            onSuccess = {
-                _categories.value = it
-                _isLoading.value = false
-            },
-            onFailure = {
-                _error.value = it.message
-                _isLoading.value = false
-            }
-        )
+        viewModelScope.launch {
+            emergencyRepo.getCategories().fold(
+                onSuccess = {
+                    _categories.value = it
+                    _isLoading.value = false
+                },
+                onFailure = {
+                    _error.value = it.message
+                    _isLoading.value = false
+                }
+            )
+        }
     }
 
     fun selectCategory(id: String) {
-        _selectedCategory.value = emergencyRepo.getCategoryById(id)
-        viewModelScope.launch { emergencyRepo.addRecent(id) }
+        viewModelScope.launch {
+            _selectedCategory.value = emergencyRepo.getCategoryById(id)
+            emergencyRepo.addRecent(id)
+        }
     }
 
     fun toggleBookmark(id: String) {
         viewModelScope.launch { emergencyRepo.toggleBookmark(id) }
     }
 
-    fun speakSteps(steps: List<String>) {
-        ttsManager.speakSteps(steps)
+    fun speakSteps(steps: List<String>, language: String? = null) {
+        ttsManager.speakSteps(steps, language)
     }
 
     fun stopSpeaking() {

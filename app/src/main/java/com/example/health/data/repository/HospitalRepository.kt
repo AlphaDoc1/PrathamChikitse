@@ -11,7 +11,7 @@ class HospitalRepository @Inject constructor(
 ) {
     private var cachedHospitals: List<Hospital>? = null
 
-    fun getHospitals(): Result<List<Hospital>> {
+    suspend fun getHospitals(): Result<List<Hospital>> {
         cachedHospitals?.let { return Result.success(it) }
         return jsonDataSource.loadHospitals().map { data ->
             data.hospitals.also { cachedHospitals = it }
@@ -22,7 +22,7 @@ class HospitalRepository @Inject constructor(
         cachedHospitals = null
     }
 
-    fun getHospitalsForLocation(lat: Double, lng: Double): List<Hospital> {
+    suspend fun getHospitalsForLocation(lat: Double, lng: Double): List<Hospital> {
         val hospitals = getHospitals().getOrNull() ?: return emptyList()
         val isBangalore = lat in 12.7..13.2 && lng in 77.4..77.8
         val isKarnataka = lat in 11.5..18.5 && lng in 74.0..78.5
@@ -36,11 +36,11 @@ class HospitalRepository @Inject constructor(
         }
     }
 
-    fun getEmergencyHospitals(): List<Hospital> {
+    suspend fun getEmergencyHospitals(): List<Hospital> {
         return getHospitals().getOrNull()?.filter { it.emergencyAvailable } ?: emptyList()
     }
 
-    fun searchHospitals(query: String): List<Hospital> {
+    suspend fun searchHospitals(query: String): List<Hospital> {
         val hospitals = getHospitals().getOrNull() ?: return emptyList()
         if (query.isBlank()) return hospitals
         val lq = query.lowercase().trim()

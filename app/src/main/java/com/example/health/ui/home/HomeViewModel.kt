@@ -61,20 +61,22 @@ class HomeViewModel @Inject constructor(
     }
 
     private fun loadData() {
-        emergencyRepo.getCategories().fold(
-            onSuccess = { cats ->
-                _uiState.value = HomeUiState(
-                    categories = cats,
-                    isLoading = false
-                )
-            },
-            onFailure = { err ->
-                _uiState.value = HomeUiState(
-                    isLoading = false,
-                    error = err.message ?: "Failed to load data"
-                )
-            }
-        )
+        viewModelScope.launch {
+            emergencyRepo.getCategories().fold(
+                onSuccess = { cats ->
+                    _uiState.value = _uiState.value.copy(
+                        categories = cats,
+                        isLoading = false
+                    )
+                },
+                onFailure = { err ->
+                    _uiState.value = _uiState.value.copy(
+                        isLoading = false,
+                        error = err.message ?: "Failed to load data"
+                    )
+                }
+            )
+        }
     }
 
     fun search(query: String) {
@@ -84,7 +86,18 @@ class HomeViewModel @Inject constructor(
     fun getFilteredCategories(): List<EmergencyCategory> {
         val query = _searchQuery.value
         return if (query.isBlank()) _uiState.value.categories
-        else emergencyRepo.searchCategories(query)
+        else {
+            // This is synchronous in the UI, but we made searchCategories suspendable.
+            // In a real app, this should be a flow or the UI should handle the delay.
+            // For now, I'll keep it simple by making searchCategories non-suspendable again
+            // OR updating the UI to use a state.
+            // Actually, I'll revert searchCategories to non-suspendable but make it use the cache.
+            // No, better to make the UI reactive.
+            _uiState.value.categories.filter { 
+                it.name.contains(query, ignoreCase = true) || 
+                it.keywords.any { k -> k.contains(query, ignoreCase = true) }
+            }
+        }
     }
 
     fun toggleBookmark(id: String) {

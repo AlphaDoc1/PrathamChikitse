@@ -33,41 +33,48 @@ fun SettingsScreen(onBack: () -> Unit, viewModel: SettingsViewModel = hiltViewMo
     var showLanguageDialog by remember { mutableStateOf(false) }
 
     Scaffold(
-        topBar = { TopAppBar(title = { Text(stringResource(R.string.settings)) }, navigationIcon = { IconButton(onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back") } }) }
+        topBar = { TopAppBar(title = { Text(stringResource(R.string.settings)) }, navigationIcon = { IconButton(onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.back)) } }) }
     ) { padding ->
         Column(Modifier.fillMaxSize().padding(padding).verticalScroll(rememberScrollState())) {
             // Appearance section
-            SettingsSection("Appearance") {
-                SettingsClickItem(Icons.Filled.Palette, "Theme", themeMode.replaceFirstChar { it.uppercase() }) { showThemeDialog = true }
+            SettingsSection(stringResource(R.string.appearance)) {
+                val themeLabel = when (themeMode) {
+                    "system" -> stringResource(R.string.system_default)
+                    "light" -> stringResource(R.string.light)
+                    "dark" -> stringResource(R.string.dark)
+                    else -> themeMode.replaceFirstChar { it.uppercase() }
+                }
+                SettingsClickItem(Icons.Filled.Palette, stringResource(R.string.theme), themeLabel) { showThemeDialog = true }
             }
 
             // General section
             SettingsSection(stringResource(R.string.general)) {
                 val langs = mapOf(
-                    "en" to "English",
-                    "kn" to "ಕನ್ನಡ",
-                    "hi" to "हिन्दी",
-                    "gu" to "ગુજરાતી",
-                    "mr" to "मराठी",
-                    "ta" to "தமிழ்"
+                    "en" to "🇺🇸 English",
+                    "kn" to "🇮🇳 ಕನ್ನಡ",
+                    "hi" to "🇮🇳 हिन्दी",
+                    "gu" to "🇮🇳 ગુજરાતી",
+                    "mr" to "🇮🇳 मराठी",
+                    "ta" to "🇮🇳 தமிழ்"
                 )
                 SettingsClickItem(Icons.Filled.Language, stringResource(R.string.language), langs[language] ?: "English") { showLanguageDialog = true }
             }
 
             // Accessibility section
             SettingsSection(stringResource(R.string.accessibility)) {
-                SettingsToggleItem(Icons.Filled.Contrast, stringResource(R.string.high_contrast), "Increase contrast for better visibility", highContrast) { viewModel.setHighContrast(it) }
-                SettingsToggleItem(Icons.Filled.TextFields, stringResource(R.string.large_text), "Increase text size throughout app", largeText) { viewModel.setLargeText(it) }
-                SettingsToggleItem(Icons.Filled.Elderly, stringResource(R.string.senior_mode), "Simplified interface with larger elements", seniorMode) { viewModel.setSeniorMode(it) }
-                SettingsToggleItem(Icons.Filled.Vibration, stringResource(R.string.haptic_feedback), "Haptic feedback for important actions", vibrationCues) { viewModel.setVibrationCues(it) }
-                SettingsToggleItem(Icons.Filled.RecordVoiceOver, stringResource(R.string.voice_first), "Automatically read emergency steps aloud", voiceFirstMode) { viewModel.setVoiceFirstMode(it) }
+                SettingsToggleItem(Icons.Filled.Contrast, stringResource(R.string.high_contrast), stringResource(R.string.high_contrast_desc), highContrast) { viewModel.setHighContrast(it) }
+                SettingsToggleItem(Icons.Filled.TextFields, stringResource(R.string.large_text), stringResource(R.string.large_text_desc), largeText) { viewModel.setLargeText(it) }
+                SettingsToggleItem(Icons.Filled.Elderly, stringResource(R.string.senior_mode), stringResource(R.string.senior_mode_desc), seniorMode) { viewModel.setSeniorMode(it) }
+                SettingsToggleItem(Icons.Filled.Vibration, stringResource(R.string.haptic_feedback), stringResource(R.string.haptic_feedback_desc), vibrationCues) { viewModel.setVibrationCues(it) }
+                SettingsToggleItem(Icons.Filled.RecordVoiceOver, stringResource(R.string.voice_first), stringResource(R.string.voice_first_desc), voiceFirstMode) { viewModel.setVoiceFirstMode(it) }
             }
 
             // About section
             SettingsSection(stringResource(R.string.about)) {
-                SettingsInfoItem(Icons.Filled.Info, "Version", "1.0.0")
-                SettingsInfoItem(Icons.Filled.Shield, stringResource(R.string.disclaimer), "Reviewed by Dr. Rajesh Kumar")
-                SettingsInfoItem(Icons.Filled.Storage, "Data", "All data stored offline on device")
+                SettingsInfoItem(Icons.Filled.Info, stringResource(R.string.version), "1.0.0")
+                SettingsInfoItem(Icons.Filled.Shield, stringResource(R.string.disclaimer), stringResource(R.string.reviewed_by, stringResource(R.string.dev_name)))
+                SettingsInfoItem(Icons.Filled.Person, stringResource(R.string.created_by), stringResource(R.string.app_created_by, stringResource(R.string.dev_name)))
+                SettingsInfoItem(Icons.Filled.Storage, stringResource(R.string.data), stringResource(R.string.data_offline))
             }
 
             Spacer(Modifier.height(24.dp))
@@ -77,10 +84,14 @@ fun SettingsScreen(onBack: () -> Unit, viewModel: SettingsViewModel = hiltViewMo
     if (showThemeDialog) {
         AlertDialog(
             onDismissRequest = { showThemeDialog = false },
-            title = { Text("Choose Theme") },
+            title = { Text(stringResource(R.string.choose_theme)) },
             text = {
                 Column {
-                    listOf("system" to "System Default", "light" to "Light", "dark" to "Dark").forEach { (value, label) ->
+                    listOf(
+                        "system" to stringResource(R.string.system_default),
+                        "light" to stringResource(R.string.light),
+                        "dark" to stringResource(R.string.dark)
+                    ).forEach { (value, label) ->
                         Row(Modifier.fillMaxWidth().padding(vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
                             RadioButton(selected = themeMode == value, onClick = { viewModel.setThemeMode(value); showThemeDialog = false })
                             Spacer(Modifier.width(8.dp))
@@ -89,7 +100,7 @@ fun SettingsScreen(onBack: () -> Unit, viewModel: SettingsViewModel = hiltViewMo
                     }
                 }
             },
-            confirmButton = { TextButton({ showThemeDialog = false }) { Text("Cancel") } }
+            confirmButton = { TextButton({ showThemeDialog = false }) { Text(stringResource(R.string.cancel)) } }
         )
     }
 
@@ -100,12 +111,12 @@ fun SettingsScreen(onBack: () -> Unit, viewModel: SettingsViewModel = hiltViewMo
             text = {
                 Column {
                     listOf(
-                        "en" to "English",
-                        "kn" to "ಕನ್ನಡ",
-                        "hi" to "हिन्दी",
-                        "gu" to "ગુજરાતી",
-                        "mr" to "मराठी",
-                        "ta" to "தமிழ்"
+                        "en" to "🇺🇸 English",
+                        "kn" to "🇮🇳 ಕನ್ನಡ",
+                        "hi" to "🇮🇳 हिन्दी",
+                        "gu" to "🇮🇳 ગુજરાતી",
+                        "mr" to "🇮🇳 मराठी",
+                        "ta" to "🇮🇳 தமிழ்"
                     ).forEach { (code, name) ->
                         Row(Modifier.fillMaxWidth().padding(vertical = 4.dp), verticalAlignment = Alignment.CenterVertically) {
                             RadioButton(selected = language == code, onClick = { viewModel.setLanguage(code); showLanguageDialog = false })
@@ -115,7 +126,7 @@ fun SettingsScreen(onBack: () -> Unit, viewModel: SettingsViewModel = hiltViewMo
                     }
                 }
             },
-            confirmButton = { TextButton({ showLanguageDialog = false }) { Text("Cancel") } }
+            confirmButton = { TextButton({ showLanguageDialog = false }) { Text(stringResource(R.string.cancel)) } }
         )
     }
 }

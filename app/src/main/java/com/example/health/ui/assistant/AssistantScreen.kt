@@ -54,10 +54,10 @@ fun AssistantScreen(
                 title = {
                     Column {
                         Text(stringResource(R.string.assistant_title), style = MaterialTheme.typography.titleMedium)
-                        Text("Local + Gemini AI", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                        Text(stringResource(R.string.local_gemini_ai), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                 },
-                navigationIcon = { IconButton(onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back") } }
+                navigationIcon = { IconButton(onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.back)) } }
             )
         }
     ) { padding ->
@@ -88,7 +88,7 @@ fun AssistantScreen(
                                     Icon(Icons.Filled.SmartToy, null, Modifier.size(16.dp), MaterialTheme.colorScheme.primary)
                                 }
                                 Spacer(Modifier.width(8.dp))
-                                Text("Assistant", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                                Text(stringResource(R.string.assistant), style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.onSurfaceVariant)
 
                                 if (msg.isGeminiResponse) {
                                     Spacer(Modifier.width(6.dp))
@@ -100,7 +100,7 @@ fun AssistantScreen(
                                         Row(Modifier.padding(horizontal = 6.dp, vertical = 2.dp), verticalAlignment = Alignment.CenterVertically) {
                                             Icon(Icons.Filled.AutoAwesome, null, Modifier.size(10.dp))
                                             Spacer(Modifier.width(3.dp))
-                                            Text("Gemini AI", style = MaterialTheme.typography.labelSmall, fontSize = 9.sp)
+                                            Text(stringResource(R.string.gemini_ai), style = MaterialTheme.typography.labelSmall, fontSize = 9.sp)
                                         }
                                     }
                                 }
@@ -140,7 +140,7 @@ fun AssistantScreen(
                                         ) {
                                             Icon(Icons.Filled.LocalHospital, null, Modifier.size(16.dp))
                                             Spacer(Modifier.width(4.dp))
-                                            Text("View All Hospitals")
+                                            Text(stringResource(R.string.view_all_hospitals))
                                         }
                                     }
                                 }
@@ -171,7 +171,7 @@ fun AssistantScreen(
 
                                                 if (result.immediateActions.isNotEmpty()) {
                                                     Spacer(Modifier.height(8.dp))
-                                                    Text("Immediate Steps:", style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
+                                                    Text(stringResource(R.string.immediate_steps), style = MaterialTheme.typography.labelLarge, fontWeight = FontWeight.Bold)
                                                     result.immediateActions.forEachIndexed { i, step ->
                                                         Text("${i + 1}. $step", style = MaterialTheme.typography.bodySmall, modifier = Modifier.padding(top = 2.dp))
                                                     }
@@ -182,7 +182,7 @@ fun AssistantScreen(
                                                     FilledTonalButton(onClick = { onNavigateToCategory(result.matchedCategory.id) }, modifier = Modifier.weight(1f)) {
                                                         Icon(Icons.Filled.MenuBook, null, Modifier.size(16.dp))
                                                         Spacer(Modifier.width(4.dp))
-                                                        Text("Full Guide", style = MaterialTheme.typography.labelSmall)
+                                                        Text(stringResource(R.string.full_guide), style = MaterialTheme.typography.labelSmall)
                                                     }
                                                     if (result.callEmergency) {
                                                         Button(
@@ -192,14 +192,14 @@ fun AssistantScreen(
                                                         ) {
                                                             Icon(Icons.Filled.Phone, null, Modifier.size(16.dp))
                                                             Spacer(Modifier.width(4.dp))
-                                                            Text("Call 108", style = MaterialTheme.typography.labelSmall)
+                                                            Text(stringResource(R.string.call_108), style = MaterialTheme.typography.labelSmall)
                                                         }
                                                     }
                                                 }
                                                 FilledTonalButton(onClick = onNavigateToHospitals, modifier = Modifier.fillMaxWidth()) {
                                                     Icon(Icons.Filled.LocalHospital, null, Modifier.size(16.dp))
                                                     Spacer(Modifier.width(4.dp))
-                                                    Text("Find Hospitals")
+                                                    Text(stringResource(R.string.find_hospitals))
                                                 }
                                             } else if (result.callEmergency) {
                                                 Spacer(Modifier.height(8.dp))
@@ -208,7 +208,7 @@ fun AssistantScreen(
                                                     colors = ButtonDefaults.buttonColors(HealthThemeExtras.colors.emergency),
                                                     modifier = Modifier.fillMaxWidth()
                                                 ) {
-                                                    Icon(Icons.Filled.Phone, null); Spacer(Modifier.width(4.dp)); Text("Call 108 Now")
+                                                    Icon(Icons.Filled.Phone, null); Spacer(Modifier.width(4.dp)); Text(stringResource(R.string.call_108_now))
                                                 }
                                             }
                                         }
@@ -245,7 +245,7 @@ fun AssistantScreen(
                         onClick = { viewModel.sendMessage() },
                         enabled = inputText.isNotBlank() && !isTyping
                     ) {
-                        Icon(Icons.AutoMirrored.Filled.Send, "Send")
+                        Icon(Icons.AutoMirrored.Filled.Send, stringResource(R.string.send))
                     }
                 }
             }
@@ -299,14 +299,14 @@ private fun ChatHospitalCard(
                 if (hospital.emergencyAvailable) {
                     AssistChip(
                         onClick = {},
-                        label = { Text("Emergency", style = MaterialTheme.typography.labelSmall) },
+                        label = { Text(stringResource(R.string.emergency), style = MaterialTheme.typography.labelSmall) },
                         leadingIcon = { Icon(Icons.Filled.LocalHospital, null, Modifier.size(14.dp), tint = HealthThemeExtras.colors.emergency) }
                     )
                 }
                 if (hospital.open24x7) {
                     AssistChip(
                         onClick = {},
-                        label = { Text("24×7", style = MaterialTheme.typography.labelSmall) },
+                        label = { Text(stringResource(R.string.open_24x7), style = MaterialTheme.typography.labelSmall) },
                         leadingIcon = { Icon(Icons.Filled.Schedule, null, Modifier.size(14.dp)) }
                     )
                 }

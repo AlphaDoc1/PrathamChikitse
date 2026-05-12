@@ -17,7 +17,7 @@ constructor(
 ) {
     private var cachedCategories: List<EmergencyCategory>? = null
 
-    fun getCategories(): Result<List<EmergencyCategory>> {
+    suspend fun getCategories(): Result<List<EmergencyCategory>> {
         cachedCategories?.let {
             return Result.success(it)
         }
@@ -30,12 +30,12 @@ constructor(
         cachedCategories = null
     }
 
-    fun getCategoryById(id: String): EmergencyCategory? {
+    suspend fun getCategoryById(id: String): EmergencyCategory? {
         return cachedCategories?.find { it.id == id }
                 ?: getCategories().getOrNull()?.find { it.id == id }
     }
 
-    fun searchCategories(query: String): List<EmergencyCategory> {
+    suspend fun searchCategories(query: String): List<EmergencyCategory> {
         val categories = getCategories().getOrNull() ?: return emptyList()
         if (query.isBlank()) return categories
         val lowerQuery = query.lowercase().trim()
@@ -57,7 +57,7 @@ constructor(
                 }
     }
 
-    fun triageQuery(query: String): TriageResult {
+    suspend fun triageQuery(query: String): TriageResult {
         val categories =
                 getCategories().getOrNull()
                         ?: return TriageResult(

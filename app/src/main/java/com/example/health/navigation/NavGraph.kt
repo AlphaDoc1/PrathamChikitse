@@ -34,16 +34,6 @@ import com.example.health.ui.theme.HealthThemeExtras
 
 private data class BottomNavItem(val route: String, val icon: ImageVector, val label: String)
 
-private val bottomNavItems = listOf(
-    BottomNavItem(Screen.Home.route, Icons.Filled.Home, "Home"),
-    BottomNavItem(Screen.EmergencyList.route, Icons.Filled.MedicalServices, "Emergency"),
-    BottomNavItem("sos_placeholder", Icons.Filled.Phone, "SOS"),
-    BottomNavItem(Screen.Hospitals.route, Icons.Filled.LocalHospital, "Hospitals"),
-    BottomNavItem(Screen.Settings.route, Icons.Filled.Settings, "Settings")
-)
-
-private val topLevelRoutes = setOf(Screen.Home.route, Screen.EmergencyList.route, Screen.Hospitals.route, Screen.Settings.route, Screen.Learning.route)
-
 @Composable
 fun AppNavGraph(
     onboardingDone: Boolean,
@@ -54,6 +44,14 @@ fun AppNavGraph(
     val currentRoute = backStackEntry?.destination?.route
     val showBottomBar = currentRoute in topLevelRoutes
 
+    val bottomNavItems = listOf(
+        BottomNavItem(Screen.Home.route, Icons.Filled.Home, stringResource(R.string.home)),
+        BottomNavItem(Screen.EmergencyList.route, Icons.Filled.MedicalServices, stringResource(R.string.medical_services)),
+        BottomNavItem("sos_placeholder", Icons.Filled.Phone, "SOS"),
+        BottomNavItem(Screen.Hospitals.route, Icons.Filled.LocalHospital, stringResource(R.string.hospitals)),
+        BottomNavItem(Screen.Settings.route, Icons.Filled.Settings, stringResource(R.string.settings))
+    )
+
     val startDest = when {
         !onboardingDone -> Screen.Splash.route
         !disclaimerDone -> Screen.Disclaimer.route
@@ -63,7 +61,7 @@ fun AppNavGraph(
     Scaffold(
         bottomBar = {
             if (showBottomBar) {
-                BottomNavBar(navController, currentRoute)
+                BottomNavBar(navController, currentRoute, bottomNavItems)
             }
         }
     ) { innerPadding ->
@@ -172,12 +170,14 @@ fun AppNavGraph(
     }
 }
 
+private val topLevelRoutes = setOf(Screen.Home.route, Screen.EmergencyList.route, Screen.Hospitals.route, Screen.Settings.route, Screen.Learning.route)
+
 @Composable
-private fun BottomNavBar(navController: NavHostController, currentRoute: String?) {
+private fun BottomNavBar(navController: NavHostController, currentRoute: String?, items: List<BottomNavItem>) {
     NavigationBar(
         tonalElevation = 2.dp
     ) {
-        bottomNavItems.forEach { item ->
+        items.forEach { item ->
             if (item.route == "sos_placeholder") {
                 // Center SOS CTA
                 NavigationBarItem(

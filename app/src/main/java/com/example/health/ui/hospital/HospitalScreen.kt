@@ -71,8 +71,8 @@ fun HospitalScreen(onBack: () -> Unit, viewModel: HospitalViewModel = hiltViewMo
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(R.string.nearby_hospitals)) },
-                navigationIcon = { IconButton(onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back") } }
+                title = { Text(stringResource(R.string.hospitals)) },
+                navigationIcon = { IconButton(onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.back)) } }
             )
         }
     ) { padding ->
@@ -89,7 +89,7 @@ fun HospitalScreen(onBack: () -> Unit, viewModel: HospitalViewModel = hiltViewMo
 
             when {
                 isLoading -> ShimmerEffect()
-                error != null -> ErrorState(message = error ?: "Error")
+                error != null -> ErrorState(message = error ?: stringResource(R.string.error))
                 else -> LazyColumn(contentPadding = PaddingValues(bottom = 80.dp)) {
                     items(hospitals, key = { it.id }) { hospital ->
                         HospitalCard(hospital, viewModel.getDistanceText(hospital),
@@ -126,14 +126,14 @@ fun HospitalCard(hospital: Hospital, distance: String, onCall: () -> Unit, onMap
             }
             Spacer(Modifier.height(8.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                if (hospital.emergencyAvailable) AssistChip({}, { Text("Emergency") }, leadingIcon = { Icon(Icons.Filled.LocalHospital, null, Modifier.size(16.dp), tint = HealthThemeExtras.colors.emergency) })
+                if (hospital.emergencyAvailable) AssistChip({}, { Text(stringResource(R.string.emergency)) }, leadingIcon = { Icon(Icons.Filled.LocalHospital, null, Modifier.size(16.dp), tint = HealthThemeExtras.colors.emergency) })
                 if (hospital.open24x7) AssistChip({}, { Text("24×7") }, leadingIcon = { Icon(Icons.Filled.Schedule, null, Modifier.size(16.dp)) })
                 Text(hospital.type, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant, modifier = Modifier.align(Alignment.CenterVertically))
             }
             Spacer(Modifier.height(8.dp))
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 OutlinedButton(onCall, Modifier.weight(1f)) { Icon(Icons.Filled.Phone, null, Modifier.size(18.dp)); Spacer(Modifier.width(4.dp)); Text(stringResource(R.string.call)) }
-                Button(onMap, Modifier.weight(1f)) { Icon(Icons.Filled.Map, null, Modifier.size(18.dp)); Spacer(Modifier.width(4.dp)); Text(stringResource(R.string.directions)) }
+                Button(onMap, Modifier.weight(1f)) { Icon(Icons.Filled.Directions, null, Modifier.size(18.dp)); Spacer(Modifier.width(4.dp)); Text(stringResource(R.string.directions)) }
             }
         }
     }

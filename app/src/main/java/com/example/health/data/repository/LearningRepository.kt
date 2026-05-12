@@ -15,7 +15,7 @@ class LearningRepository @Inject constructor(
     private var cachedMyths: List<MythFact>? = null
     private var cachedDisclaimer: DisclaimerInfo? = null
 
-    fun getModules(): Result<List<LearningModule>> {
+    suspend fun getModules(): Result<List<LearningModule>> {
         cachedModules?.let { return Result.success(it) }
         return jsonDataSource.loadLearning().map { data ->
             data.modules.also { cachedModules = it }
@@ -28,19 +28,19 @@ class LearningRepository @Inject constructor(
         cachedDisclaimer = null
     }
 
-    fun getModuleById(id: String): LearningModule? {
+    suspend fun getModuleById(id: String): LearningModule? {
         return cachedModules?.find { it.id == id }
             ?: getModules().getOrNull()?.find { it.id == id }
     }
 
-    fun getMyths(): Result<List<MythFact>> {
+    suspend fun getMyths(): Result<List<MythFact>> {
         cachedMyths?.let { return Result.success(it) }
         return jsonDataSource.loadMyths().map { data ->
             data.myths.also { cachedMyths = it }
         }
     }
 
-    fun getDisclaimer(): Result<DisclaimerInfo> {
+    suspend fun getDisclaimer(): Result<DisclaimerInfo> {
         cachedDisclaimer?.let { return Result.success(it) }
         return jsonDataSource.loadDisclaimer().map { data ->
             data.disclaimer.also { cachedDisclaimer = it }

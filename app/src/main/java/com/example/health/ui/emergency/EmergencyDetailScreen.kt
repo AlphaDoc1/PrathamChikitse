@@ -34,6 +34,10 @@ fun EmergencyDetailScreen(
     LaunchedEffect(categoryId) { viewModel.selectCategory(categoryId) }
     val category by viewModel.selectedCategory.collectAsStateWithLifecycle()
     val bookmarks by viewModel.bookmarks.collectAsStateWithLifecycle()
+    
+    // Get the current language from SettingsViewModel or LocaleHelper
+    val lang = java.util.Locale.getDefault().language
+    
     val cat = category ?: return
 
     val severityColor = when (cat.severity) {
@@ -47,14 +51,14 @@ fun EmergencyDetailScreen(
         topBar = {
             TopAppBar(
                 title = { Text(cat.name) },
-                navigationIcon = { IconButton(onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, "Back") } },
+                navigationIcon = { IconButton(onBack) { Icon(Icons.AutoMirrored.Filled.ArrowBack, stringResource(R.string.back)) } },
                 actions = {
                     IconButton({ viewModel.toggleBookmark(cat.id) }) {
-                        Icon(if (isBookmarked) Icons.Filled.Bookmark else Icons.Filled.BookmarkBorder, "Bookmark",
+                        Icon(if (isBookmarked) Icons.Filled.Bookmark else Icons.Filled.BookmarkBorder, stringResource(R.string.bookmark),
                             tint = if (isBookmarked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant)
                     }
-                    IconButton({ viewModel.speakSteps(cat.immediateSteps) }) {
-                        Icon(Icons.Filled.VolumeUp, "Read aloud")
+                    IconButton({ viewModel.speakSteps(cat.immediateSteps, lang) }) {
+                        Icon(Icons.Filled.VolumeUp, stringResource(R.string.read_aloud))
                     }
                 }
             )
@@ -65,7 +69,7 @@ fun EmergencyDetailScreen(
                 containerColor = HealthThemeExtras.colors.emergency,
                 contentColor = HealthThemeExtras.colors.onEmergency
             ) {
-                Icon(Icons.Filled.Phone, null); Spacer(Modifier.width(8.dp)); Text("Call 108")
+                Icon(Icons.Filled.Phone, null); Spacer(Modifier.width(8.dp)); Text(stringResource(R.string.call_108))
             }
         }
     ) { padding ->
@@ -90,7 +94,7 @@ fun EmergencyDetailScreen(
                     Row(Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
                         Icon(Icons.Filled.Info, null, tint = HealthThemeExtras.colors.warning, modifier = Modifier.size(20.dp))
                         Spacer(Modifier.width(8.dp))
-                        Text("This is first-aid guidance only. Always seek professional medical help.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurface)
+                        Text(stringResource(R.string.first_aid_guidance_only), style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurface)
                     }
                 }
                 Spacer(Modifier.height(16.dp))
