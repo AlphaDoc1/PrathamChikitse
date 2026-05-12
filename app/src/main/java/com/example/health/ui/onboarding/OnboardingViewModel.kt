@@ -37,7 +37,9 @@ class OnboardingViewModel @Inject constructor(
     }
 
     private fun loadDisclaimer() {
-        learningRepo.getDisclaimer().onSuccess { _disclaimer.value = it }
+        viewModelScope.launch {
+            learningRepo.getDisclaimer().onSuccess { _disclaimer.value = it }
+        }
     }
 
     fun setLanguage(lang: String) {

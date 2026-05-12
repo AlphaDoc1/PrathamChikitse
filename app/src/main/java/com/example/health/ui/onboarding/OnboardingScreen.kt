@@ -2,6 +2,7 @@ package com.example.health.ui.onboarding
 
 import androidx.compose.animation.core.*
 import androidx.compose.animation.*
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -31,10 +32,26 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.res.stringResource
+import com.example.health.R
 import com.example.health.ui.theme.HealthThemeExtras
 import com.example.health.ui.theme.MedicalTeal
 import com.example.health.ui.theme.MedicalTealLight
 import kotlinx.coroutines.delay
+
+@Composable
+fun OnboardingLayout(
+    content: @Composable ColumnScope.() -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(MaterialTheme.colorScheme.background)
+            .padding(24.dp)
+            .systemBarsPadding(),
+        content = content
+    )
+}
 
 @Composable
 fun SplashScreen(onNext: () -> Unit) {
@@ -176,33 +193,34 @@ fun EmergencyContactsSetupScreen(onSave: (String) -> Unit, onSkip: () -> Unit) {
     val contacts = remember { mutableStateListOf<String>() }
     var input by remember { mutableStateOf("") }
     val fm = LocalFocusManager.current
-    Column(Modifier.fillMaxSize().background(MaterialTheme.colorScheme.background).padding(24.dp)) {
-        Spacer(Modifier.height(48.dp))
-        Text("Emergency Contacts", style = MaterialTheme.typography.displaySmall, fontWeight = FontWeight.Bold)
+    OnboardingLayout {
+        Text(stringResource(R.string.emergency_contacts), style = MaterialTheme.typography.displaySmall, fontWeight = FontWeight.Bold)
         Spacer(Modifier.height(8.dp))
-        Text("Add people to contact during emergencies", style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(stringResource(R.string.emergency_contacts_desc), style = MaterialTheme.typography.bodyLarge, color = MaterialTheme.colorScheme.onSurfaceVariant)
         Spacer(Modifier.height(24.dp))
         Row(Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            OutlinedTextField(input, { input = it }, Modifier.weight(1f), label = { Text("Phone number") },
+            OutlinedTextField(input, { input = it }, Modifier.weight(1f), label = { Text(stringResource(R.string.phone_number)) },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone, imeAction = ImeAction.Done),
                 keyboardActions = KeyboardActions(onDone = { if (input.length >= 10) { contacts.add(input); input = ""; fm.clearFocus() } }),
                 singleLine = true, shape = RoundedCornerShape(12.dp))
             Spacer(Modifier.width(8.dp))
-            IconButton({ if (input.length >= 10) { contacts.add(input); input = "" } }) { Icon(Icons.Filled.Add, "Add") }
+            IconButton({ if (input.length >= 10) { contacts.add(input); input = "" } }) { Icon(Icons.Filled.Add, stringResource(R.string.add)) }
         }
         Spacer(Modifier.height(16.dp))
-        contacts.forEachIndexed { i, c ->
-            Card(Modifier.fillMaxWidth().padding(vertical = 4.dp), shape = RoundedCornerShape(12.dp), colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surfaceContainerLow)) {
-                Row(Modifier.fillMaxWidth().padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Filled.Phone, null, tint = MaterialTheme.colorScheme.primary); Spacer(Modifier.width(12.dp))
-                    Text(c, style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
-                    IconButton({ contacts.removeAt(i) }) { Icon(Icons.Filled.Delete, "Remove", tint = MaterialTheme.colorScheme.error) }
+        Column(Modifier.weight(1f).verticalScroll(rememberScrollState())) {
+            contacts.forEachIndexed { i, c ->
+                Card(Modifier.fillMaxWidth().padding(vertical = 4.dp), shape = RoundedCornerShape(12.dp), colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surfaceContainerLow)) {
+                    Row(Modifier.fillMaxWidth().padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Filled.Phone, null, tint = MaterialTheme.colorScheme.primary); Spacer(Modifier.width(12.dp))
+                        Text(c, style = MaterialTheme.typography.bodyLarge, modifier = Modifier.weight(1f))
+                        IconButton({ contacts.removeAt(i) }) { Icon(Icons.Filled.Delete, stringResource(R.string.remove), tint = MaterialTheme.colorScheme.error) }
+                    }
                 }
             }
         }
-        Spacer(Modifier.weight(1f))
-        Button({ onSave(contacts.joinToString(",")) }, Modifier.fillMaxWidth().height(56.dp), enabled = contacts.isNotEmpty(), shape = RoundedCornerShape(16.dp)) { Text("Save & Continue") }
+        Spacer(Modifier.height(24.dp))
+        Button({ onSave(contacts.joinToString(",")) }, Modifier.fillMaxWidth().height(56.dp), enabled = contacts.isNotEmpty(), shape = RoundedCornerShape(16.dp)) { Text(stringResource(R.string.save_continue)) }
         Spacer(Modifier.height(8.dp))
-        TextButton(onSkip, Modifier.fillMaxWidth()) { Text("Skip - I'll add later") }
+        TextButton(onSkip, Modifier.fillMaxWidth()) { Text(stringResource(R.string.skip_add_later)) }
     }
 }

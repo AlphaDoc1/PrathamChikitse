@@ -12,6 +12,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.automirrored.filled.Send
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -180,7 +181,7 @@ fun AssistantScreen(
                                                 Spacer(Modifier.height(12.dp))
                                                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                                                     FilledTonalButton(onClick = { onNavigateToCategory(result.matchedCategory.id) }, modifier = Modifier.weight(1f)) {
-                                                        Icon(Icons.Filled.MenuBook, null, Modifier.size(16.dp))
+                                                        Icon(Icons.AutoMirrored.Filled.MenuBook, null, Modifier.size(16.dp))
                                                         Spacer(Modifier.width(4.dp))
                                                         Text(stringResource(R.string.full_guide), style = MaterialTheme.typography.labelSmall)
                                                     }

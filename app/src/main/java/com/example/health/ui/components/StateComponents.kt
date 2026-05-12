@@ -18,11 +18,11 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.VolumeOff
 import androidx.compose.material.icons.filled.CloudOff
 import androidx.compose.material.icons.filled.ErrorOutline
 import androidx.compose.material.icons.filled.Inbox
 import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.VolumeOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -110,7 +110,7 @@ fun PermissionDeniedState(
 fun TTSUnavailableState(modifier: Modifier = Modifier) {
     GenericState(
         modifier = modifier,
-        icon = Icons.Filled.VolumeOff,
+        icon = Icons.AutoMirrored.Filled.VolumeOff,
         title = "Voice Unavailable",
         message = "Text-to-speech is not available on this device."
     )

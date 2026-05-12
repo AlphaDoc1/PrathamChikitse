@@ -11,6 +11,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -23,6 +24,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.res.stringResource
+import com.example.health.R
 import com.example.health.ui.theme.HealthThemeExtras
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -106,7 +109,7 @@ fun SOSScreen(onBack: () -> Unit, onHospitals: () -> Unit, onGuides: () -> Unit)
             Spacer(Modifier.height(16.dp))
             Row(Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                 OutlinedButton(onHospitals, Modifier.weight(1f)) { Icon(Icons.Filled.LocalHospital, null); Spacer(Modifier.width(4.dp)); Text(stringResource(R.string.hospitals)) }
-                OutlinedButton(onGuides, Modifier.weight(1f)) { Icon(Icons.Filled.MenuBook, null); Spacer(Modifier.width(4.dp)); Text(stringResource(R.string.guides)) }
+                OutlinedButton(onGuides, Modifier.weight(1f)) { Icon(Icons.AutoMirrored.Filled.MenuBook, null); Spacer(Modifier.width(4.dp)); Text(stringResource(R.string.guides)) }
             }
 
             Spacer(Modifier.height(16.dp))

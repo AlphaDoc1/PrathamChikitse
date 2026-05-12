@@ -8,6 +8,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.VolumeUp
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -58,7 +59,7 @@ fun EmergencyDetailScreen(
                             tint = if (isBookmarked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant)
                     }
                     IconButton({ viewModel.speakSteps(cat.immediateSteps, lang) }) {
-                        Icon(Icons.Filled.VolumeUp, stringResource(R.string.read_aloud))
+                        Icon(Icons.AutoMirrored.Filled.VolumeUp, stringResource(R.string.read_aloud))
                     }
                 }
             )

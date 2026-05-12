@@ -8,6 +8,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.MenuBook
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -42,7 +43,7 @@ fun LearningScreen(
     ) { padding ->
         Column(Modifier.fillMaxSize().padding(padding)) {
             TabRow(selectedTab) {
-                Tab(selectedTab == 0, { viewModel.selectTab(0) }, text = { Text(stringResource(R.string.modules)) }, icon = { Icon(Icons.Filled.MenuBook, null) })
+                Tab(selectedTab == 0, { viewModel.selectTab(0) }, text = { Text(stringResource(R.string.modules)) }, icon = { Icon(Icons.AutoMirrored.Filled.MenuBook, null) })
                 Tab(selectedTab == 1, { viewModel.selectTab(1) }, text = { Text(stringResource(R.string.myths_facts)) }, icon = { Icon(Icons.Filled.Lightbulb, null) })
             }
 
