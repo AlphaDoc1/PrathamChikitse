@@ -23,19 +23,15 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
         // API Key configured directly into the build environment
-        buildConfigField(
-            "String",
-            "API_KEY",
-            "\"AIzaSyA5eSZSvuukfN8iwHsItCR34yUwRaiGPdc\""
-        )
+        buildConfigField("String", "API_KEY", "\"AIzaSyC-JKpeC5rU4ERYEndAPbIsg4LOXfsYfQ8\"")
     }
 
     buildTypes {
         release {
             isMinifyEnabled = false
             proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
+                    getDefaultProguardFile("proguard-android-optimize.txt"),
+                    "proguard-rules.pro"
             )
         }
     }

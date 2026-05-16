@@ -13,3 +13,11 @@
 .externalNativeBuild
 .cxx
 local.properties
+
+# Node.js
+package.json
+package-lock.json
+node_modules/
+
+# Kotlin build error logs
+.kotlin/
